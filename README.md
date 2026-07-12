@@ -2,15 +2,17 @@
 
 אתר תכשיטים יוקרתי עם תצוגת 3D של טבעות.
 
+🌐 **אתר חי:** https://noamel1407-oss.github.io/shay-jewelry-website/
+
 ## תוכן
 
-- `index (2).html` — דף הבית
+- `index.html` — דף הבית
 - `images/` — תמונות
 - `models/` — מודלים תלת-ממדיים (GLB)
 
 ## הרצה מקומית
 
-פתחו את `index (2).html` בדפדפן, או הריצו שרת מקומי:
+פתחו את `index.html` בדפדפן, או הריצו שרת מקומי:
 
 ```bash
 npx serve .
