@@ -1,0 +1,1197 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHAY JEWELRY — שעונים · יהלומים · תכשיטי זהב | טבריה</title>
+<meta name="description" content="שי תכשיטים טבריה — תכשיטים בעבודת יד עם יהלומים טבעיים וזהב אמיתי. איכות שנעשתה לנצח.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   SHAY JEWELRY — Luxury single page
+   Palette: bg #0f0f0f | cards #181818 | gold #C9A36A | gold-2 #E2C28E
+   ============================================================ */
+:root{
+  --bg:#0f0f0f;
+  --card:#181818;
+  --gold:#C9A36A;
+  --gold-2:#E2C28E;
+  --cream:#f1ede6;
+  --cream-card:#faf8f4;
+  --white:#ffffff;
+  --text-2:#d2d2d2;
+  --text-dark:#1c1a17;
+  --text-dark-2:#5c564d;
+  --border-gold:rgba(201,163,106,.22);
+  --border-gold-soft:rgba(201,163,106,.14);
+  --ease-lux:cubic-bezier(.22,.8,.24,1);
+  --ease-cine:cubic-bezier(.16,.84,.32,1);
+  --serif:'Frank Ruhl Libre', serif;
+  --latin-serif:'Cormorant Garamond', 'Frank Ruhl Libre', serif;
+  --sans:'Heebo', sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--sans);
+  font-weight:300;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+img{display:block;max-width:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:#0f0f0f}
+
+/* ---------- reveal on scroll ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 1.1s var(--ease-lux),transform 1.1s var(--ease-lux)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  *{animation:none!important;transition:none!important}
+}
+
+/* ============ NAV ============ */
+.nav{
+  position:fixed;inset-inline:0;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(24px,5vw,72px);height:76px;
+  background:rgba(15,15,15,.78);
+  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);
+  border-bottom:1px solid var(--border-gold-soft);
+  transition:height .5s var(--ease-lux),background .5s var(--ease-lux),border-color .5s;
+}
+.nav.scrolled{height:64px;background:rgba(15,15,15,.96);border-bottom-color:var(--border-gold)}
+.nav-links{display:flex;gap:clamp(18px,3vw,44px);list-style:none}
+.nav-links a{
+  font-size:14px;font-weight:400;letter-spacing:.06em;color:var(--text-2);
+  padding-bottom:6px;position:relative;transition:color .4s;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:0;right:0;height:1px;width:0;
+  background:var(--gold);transition:width .5s var(--ease-lux);
+}
+.nav-links a:hover,.nav-links a.active{color:var(--gold-2)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.logo{display:flex;flex-direction:column;align-items:center;line-height:1}
+.logo .l1{font-family:var(--latin-serif);font-size:26px;letter-spacing:.42em;color:var(--gold-2);text-indent:.42em}
+.logo .l2{font-family:var(--latin-serif);font-size:9px;letter-spacing:.58em;color:var(--gold);margin-top:5px;text-indent:.58em}
+.nav-burger{display:none;background:none;border:none;color:var(--gold-2);font-size:24px;cursor:pointer}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;min-height:100vh;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
+  direction:ltr;
+  align-items:center;overflow:hidden;
+  background:
+    radial-gradient(1400px 820px at 88% 28%, rgba(201,163,106,.12), transparent 58%),
+    radial-gradient(1000px 680px at 8% 82%, rgba(201,163,106,.06), transparent 62%),
+    linear-gradient(185deg,#141414 0%, #0f0f0f 52%, #0a0a0a 100%);
+}
+.hero::before{
+  content:'';position:absolute;inset:0;opacity:.18;pointer-events:none;
+  background:
+    radial-gradient(2px 360px at 18% 58%, rgba(255,255,255,.06), transparent),
+    radial-gradient(2px 520px at 66% 28%, rgba(226,194,142,.07), transparent),
+    radial-gradient(1.5px 320px at 84% 72%, rgba(255,255,255,.05), transparent);
+  transform:rotate(-18deg) scale(1.4);
+}
+.hero::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:
+    radial-gradient(ellipse 90% 70% at 18% 50%, rgba(15,15,15,.72) 0%, transparent 68%),
+    linear-gradient(90deg,#0f0f0f 0%,rgba(15,15,15,.52) 22%,transparent 48%),
+    linear-gradient(0deg,#0f0f0f 0%,transparent 18%),
+    linear-gradient(180deg,transparent 72%,rgba(10,10,10,.55) 100%);
+}
+.hero-copy{
+  padding:140px clamp(24px,6vw,90px) 90px;
+  position:relative;z-index:3;
+  direction:rtl;text-align:right;
+}
+.hero-logo{text-align:center;max-width:max-content}
+.hero-logo .l2{justify-content:center}
+.hero-logo{margin-bottom:38px}
+.hero-logo .l1{
+  font-family:var(--latin-serif);font-weight:500;
+  font-size:clamp(56px,7.5vw,104px);letter-spacing:.3em;text-indent:.3em;
+  color:var(--gold-2);
+  text-shadow:0 2px 40px rgba(0,0,0,.45), 0 0 80px rgba(201,163,106,.28);
+}
+.hero-logo .l2{
+  display:flex;align-items:center;gap:16px;margin-top:10px;
+  font-family:var(--latin-serif);font-size:clamp(14px,1.6vw,20px);
+  letter-spacing:.66em;text-indent:.1em;color:var(--gold);
+}
+.hero-logo .l2::before,.hero-logo .l2::after{
+  content:'';height:1px;flex:0 0 clamp(30px,4vw,58px);background:linear-gradient(90deg,transparent,var(--gold))
+}
+.hero-logo .l2::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.hero-sub{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(18px,2vw,24px);line-height:1.85;color:#e8e2d8;
+  max-width:30ch;margin-bottom:48px;
+  text-shadow:0 2px 24px rgba(0,0,0,.55), 0 1px 0 rgba(0,0,0,.2);
+}
+.hero-cta{display:flex;gap:18px;flex-wrap:wrap}
+.hero-visual{position:relative;height:100vh;min-height:640px;z-index:2}
+.hero-visual .img-slot{position:absolute;inset:0}
+.hero-visual .img-slot img{
+  width:100%;height:100%;object-fit:cover;
+  object-position:74% 32%;
+  filter:contrast(1.1) saturate(1.08) brightness(1.02);
+  image-rendering:-webkit-optimize-contrast;
+}
+.hero-visual .img-slot::after{
+  content:'';position:absolute;z-index:1;pointer-events:none;
+  left:0;bottom:0;width:min(56%,480px);height:min(42%,320px);
+  background:
+    radial-gradient(ellipse 80% 70% at 46% 56%, rgba(8,6,5,.98) 0%, rgba(12,10,8,.9) 40%, rgba(14,11,8,.5) 70%, transparent 100%),
+    linear-gradient(14deg, transparent 0 38%, rgba(226,194,142,.08) 39%, transparent 42% 100%);
+}
+.btn{
+  display:inline-block;padding:15px 40px;font-family:var(--sans);
+  font-size:15px;font-weight:500;letter-spacing:.06em;cursor:pointer;
+  border-radius:2px;transition:all .65s var(--ease-cine);border:1px solid transparent;
+}
+.sec-title{text-rendering:optimizeLegibility}
+.cat-card,.feat-card{transform:translateZ(0);will-change:transform}
+.btn-gold{
+  background:linear-gradient(138deg,var(--gold) 0%,#d4b07a 42%,var(--gold-2) 100%);
+  color:#141210;
+  box-shadow:0 10px 36px rgba(201,163,106,.24), inset 0 1px 0 rgba(255,255,255,.18);
+}
+.btn-gold:hover{box-shadow:0 16px 48px rgba(201,163,106,.42);transform:translateY(-2px)}
+.btn-gold:active{transform:translateY(0);box-shadow:0 6px 24px rgba(201,163,106,.3)}
+.btn-ghost{
+  background:rgba(255,255,255,.025);color:var(--gold-2);
+  border-color:rgba(201,163,106,.45);
+  backdrop-filter:blur(4px);
+}
+.btn-ghost:hover{background:rgba(201,163,106,.12);border-color:var(--gold-2);transform:translateY(-2px)}
+
+/* ---------- image placeholders (replace with real photos) ---------- */
+.img-slot{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 70% 20%, rgba(201,163,106,.16), transparent 55%),
+    linear-gradient(160deg,#232019 0%, #171512 45%, #0f0e0c 100%);
+}
+.img-slot img{width:100%;height:100%;object-fit:cover;object-position:center}
+.img-slot .ph{
+  position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;
+  align-items:center;justify-content:center;color:rgba(226,194,142,.5);
+  font-size:12px;letter-spacing:.12em;text-align:center;padding:12px;
+}
+.img-slot .ph svg{opacity:.6}
+.img-slot:has(img) .ph{display:none}
+
+/* ============ SECTION SHELL ============ */
+section{position:relative}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+.sec-title{
+  font-family:var(--serif);font-weight:400;text-align:center;
+  font-size:clamp(28px,3.4vw,40px);letter-spacing:.05em;
+  line-height:1.25;
+}
+.sec-title-line{
+  width:56px;height:1.5px;margin:20px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.9;
+}
+.sec-pad{padding:clamp(80px,10vw,128px) 0}
+
+/* ============ CATEGORIES (cream) ============ */
+.categories{background:linear-gradient(180deg,var(--cream) 0%, #ebe5db 100%);color:var(--text-dark)}
+.cat-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(18px,2.6vw,32px);
+  margin-top:clamp(44px,5.5vw,68px);
+}
+.cat-card{
+  background:var(--cream-card);border-radius:8px;overflow:hidden;
+  border:1px solid rgba(201,163,106,.16);
+  box-shadow:0 4px 20px -8px rgba(60,45,20,.12);
+  transition:transform .75s var(--ease-cine),box-shadow .75s var(--ease-cine),border-color .5s;
+  cursor:pointer;
+}
+.cat-card:hover{transform:translateY(-5px);box-shadow:0 28px 52px -20px rgba(60,45,20,.26);border-color:rgba(201,163,106,.32)}
+.cat-card .img-slot{aspect-ratio:1/1;background:
+  radial-gradient(120% 90% at 60% 25%, rgba(201,163,106,.28), transparent 60%),
+  linear-gradient(160deg,#e8ddc9 0%, #d8cbb4 55%, #c8b89d 100%)}
+.cat-card .img-slot .ph{color:rgba(120,95,55,.55)}
+.cat-card .img-slot img{transition:transform 1.6s var(--ease-cine);filter:contrast(1.04) saturate(1.03)}
+.cat-card:hover .img-slot img{transform:scale(1.04)}
+.cat-body{padding:24px 20px 28px;text-align:center}
+.cat-body h3{font-family:var(--serif);font-weight:500;font-size:19px;margin-bottom:10px;letter-spacing:.02em}
+.cat-body a{
+  font-size:13.5px;color:#9d7c47;letter-spacing:.03em;
+  display:inline-flex;align-items:center;gap:6px;transition:gap .4s var(--ease-lux),color .4s;
+}
+.cat-card:hover .cat-body a{gap:11px;color:#7d5f30}
+
+/* ============ FEATURED (dark) ============ */
+.featured{
+  background:
+    radial-gradient(1000px 560px at 12% 18%, rgba(201,163,106,.07), transparent 58%),
+    radial-gradient(700px 400px at 88% 80%, rgba(201,163,106,.04), transparent 55%),
+    linear-gradient(180deg,#101010,#0c0c0c);
+}
+.feat-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(18px,2.6vw,30px);
+  margin-top:clamp(44px,5.5vw,68px);
+}
+.feat-card{
+  background:linear-gradient(165deg,#1a1a1a 0%,var(--card) 100%);
+  border:1px solid var(--border-gold-soft);border-radius:6px;
+  overflow:hidden;transition:transform .75s var(--ease-cine),box-shadow .75s var(--ease-cine),border-color .5s;
+  cursor:pointer;
+}
+.feat-card:hover{transform:translateY(-5px);border-color:rgba(201,163,106,.42);box-shadow:0 28px 64px -22px rgba(0,0,0,.85),0 0 48px -20px rgba(201,163,106,.28)}
+.feat-card .img-slot{aspect-ratio:1/1}
+.feat-card .img-slot img{transition:transform 1.6s var(--ease-cine);filter:contrast(1.06) saturate(1.04)}
+.feat-card:hover .img-slot img{transform:scale(1.05)}
+.feat-body{padding:20px;text-align:center;border-top:1px solid var(--border-gold-soft)}
+.feat-body a{font-size:14px;color:var(--gold-2);letter-spacing:.07em;transition:color .4s,letter-spacing .4s}
+.feat-card:hover .feat-body a{color:var(--gold);letter-spacing:.09em}
+.feat-more{text-align:center;margin-top:clamp(36px,4vw,54px)}
+
+/* ============ REVIEWS (cream) ============ */
+.reviews{background:linear-gradient(180deg,#f0ebe4 0%, var(--cream) 100%);color:var(--text-dark)}
+.rev-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.6vw,30px);
+  margin-top:clamp(44px,5.5vw,68px);
+}
+.rev-card{
+  background:var(--cream-card);border:1px solid rgba(0,0,0,.05);border-radius:8px;
+  padding:28px 26px;display:flex;flex-direction:column;gap:16px;
+  box-shadow:0 8px 28px -14px rgba(60,45,20,.12);
+  transition:transform .75s var(--ease-cine),box-shadow .75s var(--ease-cine);
+}
+.rev-card:hover{transform:translateY(-3px);box-shadow:0 22px 48px -18px rgba(60,45,20,.2)}
+.rev-head{display:flex;align-items:center;gap:14px}
+.rev-avatar{
+  width:44px;height:44px;border-radius:50%;flex:0 0 44px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:17px;color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.rev-name{font-weight:500;font-size:15.5px;letter-spacing:.01em}
+.rev-meta{font-size:12.5px;color:var(--text-dark-2)}
+.rev-stars{color:#e8a820;font-size:14.5px;letter-spacing:2.5px}
+.rev-when{font-size:12.5px;color:var(--text-dark-2);margin-inline-start:8px}
+.rev-text{font-size:14.5px;line-height:1.9;color:#3a352c;flex:1}
+.rev-foot{display:flex;align-items:center;justify-content:space-between;color:var(--text-dark-2);font-size:14px;border-top:1px solid rgba(0,0,0,.05);padding-top:10px}
+.rev-more{text-align:center;margin-top:clamp(36px,4vw,54px)}
+.btn-dark-ghost{
+  background:transparent;color:#3d382f;border:1px solid rgba(120,95,55,.45);
+}
+.btn-dark-ghost:hover{background:rgba(201,163,106,.14);border-color:#9d7c47;transform:translateY(-2px)}
+
+/* ============ CONTACT (dark) ============ */
+.contact{
+  background:
+    radial-gradient(900px 520px at 86% 18%, rgba(201,163,106,.09), transparent 58%),
+    linear-gradient(180deg,#0e0e0e,#0a0a0a);
+  overflow:hidden;
+}
+.contact-grid{
+  display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(36px,5.5vw,76px);
+  align-items:center;
+}
+.contact-copy p{color:var(--text-2);margin-top:18px;font-size:16px;line-height:1.85;max-width:42ch}
+.contact-form{display:flex;flex-direction:column;gap:18px;margin-top:40px}
+.field{
+  background:rgba(255,255,255,.028);border:1px solid var(--border-gold-soft);border-radius:3px;
+  color:var(--white);font-family:var(--sans);font-size:15px;font-weight:300;
+  padding:16px 20px;width:100%;transition:border-color .5s var(--ease-lux),background .5s,box-shadow .5s;
+}
+.field::placeholder{color:rgba(210,210,210,.42)}
+.field:focus{outline:none;border-color:rgba(201,163,106,.65);background:rgba(201,163,106,.06);box-shadow:0 0 0 3px rgba(201,163,106,.08)}
+.contact-visual .img-slot{aspect-ratio:4/3.4;border-radius:4px;border:1px solid var(--border-gold-soft);box-shadow:0 24px 64px -28px rgba(0,0,0,.7)}
+.contact-copy .sec-title{text-align:right}
+.contact-copy .sec-title-line{margin:20px 0 0}
+.contact-form .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.contact-visual .img-slot img{filter:contrast(1.06) saturate(1.04)}
+textarea.field{min-height:132px;resize:vertical}
+
+/* ============ FOOTER ============ */
+.footer{background:#0a0a0a;border-top:1px solid var(--border-gold);padding:clamp(56px,7vw,84px) 0 0}
+.footer-grid{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(28px,4vw,60px);
+  align-items:start;
+}
+.footer h4{font-family:var(--serif);font-weight:500;font-size:17px;color:var(--gold-2);margin-bottom:20px;letter-spacing:.04em}
+.footer-contact li{list-style:none;display:flex;align-items:center;gap:12px;color:var(--text-2);font-size:14.5px;margin-bottom:14px}
+.footer-contact svg{flex:0 0 18px;stroke:var(--gold)}
+.footer-brand{text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px}
+.footer-social{display:flex;gap:14px}
+.footer-social a{
+  width:38px;height:38px;border:1px solid var(--border-gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;transition:all .5s var(--ease-lux);
+}
+.footer-social a:hover{border-color:var(--gold-2);background:rgba(201,163,106,.1);transform:translateY(-2px)}
+.footer-social svg{stroke:var(--gold-2)}
+.footer-news{text-align:right}
+.footer-news p{color:var(--text-2);font-size:14px;margin-bottom:18px}
+.news-row{display:flex;gap:10px}
+.news-row .field{padding:12px 16px;font-size:14px}
+.btn-sm{padding:12px 24px;font-size:14px}
+.footer-bottom{
+  margin-top:clamp(44px,5vw,64px);padding:24px 0;text-align:center;
+  border-top:1px solid rgba(201,163,106,.12);
+  color:rgba(210,210,210,.55);font-size:13px;letter-spacing:.04em;
+}
+
+/* ============ 3D RING CANVAS ============ */
+#ring-canvas{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;
+  z-index:60;pointer-events:none;background:transparent;
+  opacity:0;transition:opacity 2.4s var(--ease-cine);
+}
+#ring-canvas.on{opacity:1}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1024px){
+  .cat-grid,.feat-grid{grid-template-columns:repeat(2,1fr)}
+  .rev-grid{grid-template-columns:1fr;max-width:540px;margin-inline:auto;margin-top:52px}
+  .hero{grid-template-columns:1fr}
+  .hero-visual{position:absolute;inset:0;opacity:.68;min-height:0}
+  .hero-visual .img-slot img{object-position:70% 30%}
+  .hero-visual .img-slot::after{width:min(64%,540px);height:min(46%,360px)}
+  .hero-copy{padding-top:168px;padding-bottom:80px}
+  .contact-grid{grid-template-columns:1fr;gap:40px}
+  .contact-visual{order:2;max-width:520px;margin-inline:auto;width:100%}
+  .footer-grid{grid-template-columns:1fr;text-align:center}
+  .footer-contact li{justify-content:center}
+  .footer-news{text-align:center}
+  .news-row{justify-content:center}
+}
+@media (max-width:640px){
+  .nav-links{display:none}
+  .nav-burger{display:block}
+  .cat-grid,.feat-grid{grid-template-columns:1fr 1fr;gap:14px}
+  .cat-body{padding:18px 14px 22px}
+  .cat-body h3{font-size:16px}
+  .hero-cta .btn{padding:13px 28px;font-size:14px}
+  .hero-copy{padding-top:148px;padding-inline:20px}
+  .hero-sub{font-size:17px;margin-bottom:36px}
+  .sec-pad{padding:clamp(64px,14vw,88px) 0}
+  .contact-form .row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== NAV ==================== -->
+<nav class="nav" id="nav">
+  <ul class="nav-links">
+    <li><a href="#hero" class="active">דף הבית</a></li>
+    <li><a href="#categories">קולקציות</a></li>
+    <li><a href="#featured">אודות</a></li>
+    <li><a href="#reviews">ביקורות</a></li>
+    <li><a href="#contact">צור קשר</a></li>
+  </ul>
+  <a class="logo" href="#hero" aria-label="SHAY JEWELRY">
+    <span class="l1">SHAY</span>
+    <span class="l2">JEWELRY</span>
+  </a>
+  <button class="nav-burger" aria-label="תפריט">☰</button>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="hero">
+  <div class="hero-copy">
+    <div class="hero-logo reveal">
+      <div class="l1">SHAY</div>
+      <div class="l2">JEWELRY</div>
+    </div>
+    <p class="hero-sub reveal">תכשיטים בעבודת יד עם יהלומים טבעיים וזהב איכותי. איכות שנשארת לנצח</p>
+    <div class="hero-cta reveal">
+      <a href="#featured" class="btn btn-gold">לצפייה בקולקציה</a>
+      <a href="#contact" class="btn btn-ghost">קבעי פגישה</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="img-slot"><img src="images/hero.jpg?v=no-static-ring" alt="SHAY JEWELRY — תכשיטי יוקרה" fetchpriority="high" decoding="sync" width="872" height="714"></div>
+  </div>
+</section>
+
+<!-- ==================== CATEGORIES ==================== -->
+<section class="categories sec-pad" id="categories">
+  <div class="wrap">
+    <h2 class="sec-title reveal">קטגוריות מובילות</h2>
+    <div class="sec-title-line reveal"></div>
+    <div class="cat-grid">
+      <!-- סדר RTL: הכרטיס הראשון בקוד מופיע ראשון מימין -->
+      <article class="cat-card reveal">
+        <div class="img-slot"><img src="images/cat1.jpg" alt="טבעות זהב" loading="lazy"></div>
+        <div class="cat-body">
+          <h3>טבעות זהב</h3>
+          <a href="#">לצפייה בקולקציה ‹</a>
+        </div>
+      </article>
+      <article class="cat-card reveal">
+        <div class="img-slot"><img src="images/cat4.jpg" alt="עגילים" loading="lazy"></div>
+        <div class="cat-body">
+          <h3>עגילים</h3>
+          <a href="#">לצפייה בקולקציה ‹</a>
+        </div>
+      </article>
+      <article class="cat-card reveal">
+        <div class="img-slot"><img src="images/cat3.jpg" alt="שרשראות" loading="lazy"></div>
+        <div class="cat-body">
+          <h3>שרשראות</h3>
+          <a href="#">לצפייה בקולקציה ‹</a>
+        </div>
+      </article>
+      <article class="cat-card reveal">
+        <div class="img-slot"><img src="images/cat2.jpg" alt="טבעות אירוסין" loading="lazy"></div>
+        <div class="cat-body">
+          <h3>טבעות אירוסין</h3>
+          <a href="#">לצפייה בקולקציה ‹</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FEATURED ==================== -->
+<section class="featured sec-pad" id="featured">
+  <div class="wrap">
+    <h2 class="sec-title reveal">קולקציות נבחרות</h2>
+    <div class="sec-title-line reveal"></div>
+    <div class="feat-grid">
+      <article class="feat-card reveal">
+        <div class="img-slot"><img src="images/feat1.jpg" alt="טבעת סוליטר יהלום" loading="lazy"></div>
+        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+      </article>
+      <article class="feat-card reveal">
+        <div class="img-slot"><img src="images/feat2.jpg" alt="טבעת איטרניטי יהלומים" loading="lazy"></div>
+        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+      </article>
+      <article class="feat-card reveal">
+        <div class="img-slot"><img src="images/feat3.jpg" alt="סט טבעות יהלומים" loading="lazy"></div>
+        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+      </article>
+      <article class="feat-card reveal">
+        <div class="img-slot"><img src="images/feat4.jpg" alt="טבעת איטרניטי" loading="lazy"></div>
+        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+      </article>
+    </div>
+    <div class="feat-more reveal">
+      <a href="#" class="btn btn-ghost">לצפייה בכל הקולקציות</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== REVIEWS ==================== -->
+<section class="reviews sec-pad" id="reviews">
+  <div class="wrap">
+    <h2 class="sec-title reveal">לקוחות ממליצים</h2>
+    <div class="sec-title-line reveal"></div>
+    <div class="rev-grid">
+      <!-- ⚠️ הטקסטים תומללו מצילום המסך — כדאי לוודא מול הביקורות המקוריות בגוגל -->
+      <article class="rev-card reveal">
+        <div class="rev-head">
+          <div class="rev-avatar" style="background:linear-gradient(135deg,#7e57c2,#5c6bc0)">ד</div>
+          <div>
+            <div class="rev-name">Danielle Wiseman</div>
+            <div class="rev-meta">7 ביקורות</div>
+          </div>
+        </div>
+        <div><span class="rev-stars">★★★★★</span><span class="rev-when">לפני 4 שנים</span></div>
+        <p class="rev-text">מאוד מרוצים! השירות מדהים! מחיר ומקצועי. שי מקסים ואדיב, מקשיב ומתחשב בכל בקשה. מומלץ בחום!</p>
+        <div class="rev-foot"><span>🙏 1</span><span>♡</span></div>
+      </article>
+      <article class="rev-card reveal">
+        <div class="rev-head">
+          <div class="rev-avatar" style="background:linear-gradient(135deg,#5e35b1,#3949ab)">I</div>
+          <div>
+            <div class="rev-name">Ilanit Zoar</div>
+            <div class="rev-meta">ביקורת אחת</div>
+          </div>
+        </div>
+        <div><span class="rev-stars">★★★★★</span><span class="rev-when">לפני 3 שנים</span></div>
+        <p class="rev-text">שי תכשיטי זהב בטבריה — חנות עם מבחר עצום, ומעל כולם לקוחות מרוצים... שירות... איכות... יחס. והכי חשוב — שווה לכל ממש כך... תודה על שירות נפלא 💞🙏</p>
+        <div class="rev-foot"><span>🙏</span><span>♡</span></div>
+      </article>
+      <article class="rev-card reveal">
+        <div class="rev-head">
+          <div class="rev-avatar" style="background:linear-gradient(135deg,#c9a36a,#9d7c47)">ש</div>
+          <div>
+            <div class="rev-name">שני תורג'מן</div>
+            <div class="rev-meta">6 ביקורות · תמונה אחת</div>
+          </div>
+        </div>
+        <div><span class="rev-stars">★★★★★</span><span class="rev-when">לפני 3 שנים</span></div>
+        <p class="rev-text">היי, קניתי לפני יומיים שרשרת לבעלי, וברגע שנכנסתי הייתה קנייה. שי הבעלים נתן שירות מסור ועזר לי למצוא בדיוק מה שרציתי. תודה רבה!</p>
+        <div class="rev-foot"><span>🙏 1</span><span>♡</span></div>
+      </article>
+    </div>
+    <div class="rev-more reveal">
+      <a href="#" class="btn btn-dark-ghost">לקריאת כל הביקורות</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTACT ==================== -->
+<section class="contact sec-pad" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-copy reveal">
+      <h2 class="sec-title">צור קשר</h2>
+      <div class="sec-title-line"></div>
+      <p>נשמח לענות לך ולתת את השירות הטוב ביותר</p>
+      <form class="contact-form" onsubmit="event.preventDefault()">
+        <div class="row">
+          <input class="field" type="text" name="name" placeholder="שם מלא" required>
+          <input class="field" type="tel" name="phone" placeholder="טלפון" required>
+        </div>
+        <textarea class="field" name="message" placeholder="הודעה"></textarea>
+        <button class="btn btn-gold" type="submit">שלח הודעה</button>
+      </form>
+    </div>
+    <div class="contact-visual reveal">
+      <div class="img-slot"><img src="images/contact.png" alt="טבעת סוליטר יהלום — SHAY JEWELRY" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <div class="footer-news">
+      <h4>הצטרפו למועדון הלקוחות</h4>
+      <p>וקבלו עדכונים והטבות בלעדיות</p>
+      <div class="news-row">
+        <input class="field" type="email" placeholder="אימייל">
+        <button class="btn btn-ghost btn-sm">הרשמה</button>
+      </div>
+    </div>
+<div class="footer-brand">
+      <a class="logo" href="#hero">
+        <span class="l1" style="font-size:34px">SHAY</span>
+        <span class="l2" style="font-size:10px">JEWELRY</span>
+      </a>
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg>
+        </a>
+        <a href="#" aria-label="Facebook">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <h4>צור קשר</h4>
+      <ul class="footer-contact">
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.4 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 2z"/></svg>
+          <span>04-6717547</span>
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>רחוב הגליל 7, טבריה</span>
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 11.5a8.4 8.4 0 0 1-8.4 8.4 8.3 8.3 0 0 1-4-1L3 20l1.2-5.4a8.3 8.3 0 0 1-1-4A8.4 8.4 0 0 1 11.6 2a8.4 8.4 0 0 1 9.4 9.5z"/></svg>
+          <a href="https://wa.me/97246717547">שלח הודעה ב־WhatsApp</a>
+        </li>
+      </ul>
+    </div>
+      </div>
+  <div class="footer-bottom">© כל הזכויות שמורות ל־SHAY JEWELRY</div>
+</footer>
+
+<!-- ==================== 3D RING (signature element) ==================== -->
+<canvas id="ring-canvas" aria-hidden="true"></canvas>
+
+<!-- three.js + GLTFLoader רשמי (שומר חומרים וטקסטורות מקוריים) + GSAP ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';document.head.appendChild(s)"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"
+        onerror="var s=document.createElement('script');s.src='https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js';document.head.appendChild(s)"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js';document.head.appendChild(s)"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js';document.head.appendChild(s)"></script>
+
+<script>
+/* ============================================================
+   UI: nav, reveals
+   ============================================================ */
+(function(){
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), {passive:true});
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach((el,i) => {
+    el.style.transitionDelay = (i % 4) * 90 + 'ms';
+    io.observe(el);
+  });
+
+  // active nav link
+  const links = [...document.querySelectorAll('.nav-links a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+  const io2 = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting){
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, {rootMargin:'-45% 0px -45% 0px'});
+  secs.forEach(s => s && io2.observe(s));
+})();
+
+/* ============================================================
+   MODEL LOADING — THREE.GLTFLoader הרשמי
+   שומר את החומרים והטקסטורות המקוריים של המודל, ללא החלפה.
+   ============================================================ */
+const MODEL_URLS = [
+  './models/shay-ring.glb',                                  // הטבעת האמיתית — Meshy rose-gold solitaire (המאושרת)
+  './Meshy_AI_Starburst_Diamond_Rin_0705120231_texture.glb', // גיבוי — הדגם הקודם, אם החדש חסר
+  './ring.glb'
+];
+
+/* JEWELRY_QUALITY — נקודת כיוון יחידה לרינדור פרימיום (שנה כאן בלבד) */
+const JEWELRY_QUALITY = {
+  dprDesktopMin: 2, dprDesktopMax: 3,
+  dprMobileMax: 1.75,
+  toneExposure: 1.48,
+  envSigma: 0.005,
+  envCubemapSize: 640,
+  envMapIntensity: 3.85,
+  metalRoughnessCap: 0.07,
+  clearcoat: 0.38,
+  clearcoatRoughness: 0.03,
+  normalScaleBoost: 1.32,
+  emissiveBase: 0.18,
+  emissiveSparkleMax: 0.72,
+  cameraFov: 26,
+  ringTiltX: 0.22,
+  scrollScrub: 1.65,
+};
+
+/* שדרוג פיזיקלי של החומר המקורי — בלי להחליף אף טקסטורה.
+   כל המפות (baseColor/metallicRoughness/normal/emissive) נשמרות במלואן;
+   רק תגובת הרינדור (roughness/clearcoat/envMap) מכוונת מעליהן. */
+function upgradeToJewelryMaterial(mat, three, envMap){
+  const phys = new three.MeshPhysicalMaterial({
+    map: mat.map || null,
+    normalMap: mat.normalMap || null,
+    normalScale: mat.normalScale ? mat.normalScale.clone() : new three.Vector2(1, 1),
+    metalnessMap: mat.metalnessMap || null,
+    roughnessMap: mat.roughnessMap || null,
+    aoMap: mat.aoMap || null,
+    emissiveMap: mat.emissiveMap || null,
+    emissive: mat.emissive ? mat.emissive.clone() : new three.Color(0x000000),
+    color: mat.color ? mat.color.clone() : new three.Color(0xffffff),
+    metalness: mat.metalness != null ? mat.metalness : 1,
+    roughness: mat.roughness != null ? mat.roughness : 1,
+    side: mat.side,
+    transparent: mat.transparent,
+    opacity: mat.opacity,
+    alphaTest: mat.alphaTest || 0,
+    envMap: envMap || null,
+  });
+  // metalnessMap שולט בפיקסלים (מתכת vs יהלום) — לא דורסים לערך אחיד.
+  phys.metalness = mat.metalness != null ? mat.metalness : 1;
+  phys.roughness = Math.min(phys.roughness, JEWELRY_QUALITY.metalRoughnessCap);
+  phys.envMapIntensity = JEWELRY_QUALITY.envMapIntensity;
+  phys.clearcoat = JEWELRY_QUALITY.clearcoat;
+  phys.clearcoatRoughness = JEWELRY_QUALITY.clearcoatRoughness;
+  phys.reflectivity = 1;
+  phys.ior = 1.5;
+  phys.normalScale.multiplyScalar(JEWELRY_QUALITY.normalScaleBoost);
+  phys.side = three.FrontSide;
+  if (phys.emissiveMap){
+    phys.emissive = new three.Color(0xfff8ee);
+    phys.emissiveIntensity = JEWELRY_QUALITY.emissiveBase;
+  }
+  phys.needsUpdate = true;
+  return phys;
+}
+
+function enhanceModelTextures(root, three, renderer){
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
+  const sRGBKeys = new Set(['map', 'emissiveMap']);
+  const linearKeys = new Set(['normalMap', 'roughnessMap', 'metalnessMap', 'aoMap']);
+  root.traverse(o => {
+    if (!o.isMesh || !o.material) return;
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    mats.forEach(m => {
+      Object.keys(m).forEach(key => {
+        const tex = m[key];
+        if (!tex || !tex.isTexture) return;
+        tex.anisotropy = maxAniso;
+        tex.minFilter = three.LinearMipmapLinearFilter;
+        tex.magFilter = three.LinearFilter;
+        tex.generateMipmaps = true;
+        if (sRGBKeys.has(key) && 'sRGBEncoding' in three) tex.encoding = three.sRGBEncoding;
+        else if (linearKeys.has(key) && 'LinearEncoding' in three) tex.encoding = three.LinearEncoding;
+        tex.needsUpdate = true;
+      });
+    });
+  });
+}
+
+function loadGLB(url, three, envMap, renderer){
+  return new Promise((resolve, reject) => {
+    new three.GLTFLoader().load(url, gltf => {
+      const model = gltf.scene;
+
+      const box = new three.Box3().setFromObject(model);
+      const center = box.getCenter(new three.Vector3());
+      const size = box.getSize(new three.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      model.position.sub(center);
+
+      const holder = new three.Group();
+      holder.scale.setScalar(2.0 / maxDim);
+      holder.add(model);
+
+      const jewelryMats = [];
+      holder.traverse(o => {
+        if (o.isMesh && o.material){
+          const old = o.material;
+          try {
+            o.material = upgradeToJewelryMaterial(old, three, envMap);
+            if (old !== o.material) old.dispose();
+            jewelryMats.push(o.material);
+          } catch(e){
+            console.warn('Material upgrade skipped, using original:', e);
+            if (envMap) old.envMap = envMap;
+            jewelryMats.push(old);
+          }
+        }
+      });
+      enhanceModelTextures(holder, three, renderer);
+      holder.userData.jewelryMats = jewelryMats;
+      resolve(holder);
+    }, undefined, reject);
+  });
+}
+
+/* ============================================================
+   3D SCENE — הטבעת כסרט זהב שמלווה את הגלילה
+   ============================================================ */
+(function initRing(){
+  if (!window.THREE || !THREE.GLTFLoader || !window.gsap || !window.ScrollTrigger){ setTimeout(initRing, 200); return; }
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  gsap.registerPlugin(ScrollTrigger);
+
+  const canvas = document.getElementById('ring-canvas');
+  const renderer = new THREE.WebGLRenderer({
+    canvas, alpha:true, antialias:true, powerPreference:'high-performance', precision:'highp'
+  });
+  function setRendererQuality(){
+    const mobile = innerWidth < 768;
+    const dpr = mobile
+      ? Math.min(devicePixelRatio, JEWELRY_QUALITY.dprMobileMax)
+      : Math.min(Math.max(devicePixelRatio, JEWELRY_QUALITY.dprDesktopMin), JEWELRY_QUALITY.dprDesktopMax);
+    renderer.setPixelRatio(dpr);
+  }
+  setRendererQuality();
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = JEWELRY_QUALITY.toneExposure;
+  if ('physicallyCorrectLights' in renderer) renderer.physicallyCorrectLights = true;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(JEWELRY_QUALITY.cameraFov, innerWidth/innerHeight, .1, 50);
+  camera.position.set(0, 0.06, 6.2);
+
+  /* --- סביבת סטודיו תכשיטים מקצועית (HDR-like) שנבנית פרוצדורלית — בלי קובץ HDR חיצוני ---
+     מעגל פאנלים סביב הטבעת מכל הכיוונים (לא רק חזית) כדי לקבל השתקפויות
+     יפות מכל זווית סיבוב, כפי שיהיה בצילום תכשיטים אמיתי בקופסת אור. */
+  function studioEnv(){
+    const env = new THREE.Scene();
+    env.background = new THREE.Color(0x030303);
+    const panel = (color, intensity, w, h, x, y, z) => {
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(w, h),
+        new THREE.MeshBasicMaterial({color: new THREE.Color(color).multiplyScalar(intensity), side: THREE.DoubleSide})
+      );
+      mesh.position.set(x, y, z);
+      mesh.lookAt(0, 0, 0);
+      env.add(mesh);
+    };
+    panel(0xfff1d6, 14.0, 7, 5,  4.2,  5.5,  3.2);
+    panel(0xffe9c4, 5.8,  9, 3, -5.2,  2.2, -2.2);
+    panel(0xc9a36a, 4.6,  5, 5,  0, -4.2,  4.2);
+    panel(0xdfe8ff, 2.4,  4, 7, -4.2,  1.2,  5.2);
+    panel(0xfff4df, 4.8,  7, 7,  0,  0.2,  7.2);
+    panel(0xffe6bf, 3.4,  6, 6,  0,  1.2, -6.2);
+    panel(0xffefd9, 2.8,  5, 5,  5.2, -1.2, -1.2);
+    panel(0xffefd9, 2.8,  5, 5, -5.2, -1.2,  1.2);
+    panel(0xffffff, 8.2,  1.4, 1.4, 2.0, 3.6, 5.8);
+    panel(0xfff8f0, 5.4,  2.5, 2.5, -2.4, 4.8, 4.5);
+    panel(0xffffff, 5.6,  0.9, 0.9, 1.4, 4.2, 4.8);
+    panel(0xffd4a8, 4.0,  3, 2,  3.8, 3.2, 2.8);
+    const pm = new THREE.PMREMGenerator(renderer);
+    if (JEWELRY_QUALITY.envCubemapSize) pm._cubeSize = JEWELRY_QUALITY.envCubemapSize;
+    pm.compileCubemapShader();
+    const envMap = pm.fromScene(env, JEWELRY_QUALITY.envSigma).texture;
+    pm.dispose();
+    return envMap;
+  }
+  const envMap = studioEnv();
+  scene.environment = envMap;
+
+  /* תאורת סטודיו תכשיטים — key חם, fill רך, rim, ונקודות specular ליהלומים */
+  const key  = new THREE.DirectionalLight(0xfff2e0, 2.45); key.position.set(3.6, 5.8, 4.8); scene.add(key);
+  const fill = new THREE.DirectionalLight(0xfff6ea, 0.82);  fill.position.set(-4.2, -0.2, 4.2); scene.add(fill);
+  const rim  = new THREE.DirectionalLight(0xf0e6d4, 0.78);  rim.position.set(-4.8, 3.2, -3.6); scene.add(rim);
+  const rim2 = new THREE.DirectionalLight(0xffefd6, 0.48);  rim2.position.set(4.8, 1.8, -3.0); scene.add(rim2);
+  const specStone = new THREE.PointLight(0xfffef8, 4.8, 24); specStone.position.set(1.2, 4.2, 5.4); scene.add(specStone);
+  const specMetal = new THREE.PointLight(0xffe0b8, 2.4, 20); specMetal.position.set(-2.8, 2.6, 4.8); scene.add(specMetal);
+  const stoneSpot = new THREE.SpotLight(0xffffff, 2.9, 32, Math.PI / 7.5, 0.28, 1.1);
+  stoneSpot.position.set(2.2, 6.2, 6.2);
+  stoneSpot.target.position.set(0, 0.35, 0);
+  scene.add(stoneSpot);
+  scene.add(stoneSpot.target);
+  scene.add(new THREE.AmbientLight(0x3d3428, 0.14));
+  const LIGHT_BASE = { specStone: 4.8, specMetal: 2.4, stoneSpot: 2.9, key: 2.45 };
+
+  const pivot = new THREE.Group();
+  scene.add(pivot);
+
+  /* ============================================================
+     RING_STATES — מקום יחיד לכוונון מסלול הטבעת הקולנועי
+     position: [x, y, z] | rotation: [rx, ry, rz] | scale | camera | lights
+     ============================================================ */
+  const RING_STATES = {
+    desktop: {
+      xSide: null,
+      hero: { position:[.30,-.34,0], rotation:[.22,.14,.01], scale:1.28, camera:[0,.06,6.2], lights:{specStone:4.8,specMetal:2.4,stoneSpot:2.9,key:2.45} },
+      lift: { position:[.24,-.10,.14], rotation:[.18,.42,.02], scale:1.06, camera:[.08,.04,5.95], lights:{specStone:4.5,specMetal:2.2,stoneSpot:2.7,key:2.3} },
+      collections: { position:[null,.03,0], rotation:[.12,.78,.04], scale:.38, side:-1, camera:[.32,.08,6.35], lights:{specStone:4.1,specMetal:2.3,stoneSpot:2.4,key:2.1} },
+      showcase: { position:[null,.01,.06], rotation:[.10,1.05,.03], scale:.40, side:1, camera:[-.28,.06,6.28], lights:{specStone:4.2,specMetal:2.2,stoneSpot:2.5,key:2.15} },
+      craftsmanship: { position:[null,-.02,.22], rotation:[.08,1.28,.02], scale:.52, side:1, camera:[-.12,.12,5.45], lights:{specStone:5.4,specMetal:2.5,stoneSpot:3.2,key:2.0} },
+      reviews: { position:[null,.06,0], rotation:[.14,1.65,.04], scale:.32, side:-1, camera:[.18,.04,6.5], lights:{specStone:3.6,specMetal:1.9,stoneSpot:2.1,key:1.85} },
+      contact: { position:[null,-.02,.08], rotation:[.16,1.92,.02], scale:.44, side:-1, camera:[.14,.08,6.05], lights:{specStone:4.6,specMetal:2.3,stoneSpot:2.8,key:2.35} },
+      finale: { position:[0,null,0], rotation:[.20,2.15,.01], scale:.36, camera:[0,.04,6.18], lights:{specStone:4.4,specMetal:2.2,stoneSpot:2.6,key:2.4} },
+      seam: { scale:.34 }
+    },
+    tablet: {
+      xSide: .74,
+      hero: { position:[.26,-.38,0], rotation:[.22,.12,.01], scale:.90, camera:[0,.04,6.1], lights:{specStone:4.4,specMetal:2.2,stoneSpot:2.7,key:2.3} },
+      lift: { position:[.22,-.14,.10], rotation:[.18,.38,.02], scale:.78, camera:[.06,.02,5.85], lights:{specStone:4.2,specMetal:2.1,stoneSpot:2.5,key:2.2} },
+      collections: { position:[null,.02,0], rotation:[.12,.72,.04], scale:.30, side:-1, camera:[.26,.06,6.2], lights:{specStone:3.9,specMetal:2.1,stoneSpot:2.3,key:2.0} },
+      showcase: { position:[null,0,.04], rotation:[.10,.98,.03], scale:.32, side:1, camera:[-.22,.04,6.15], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.4,key:2.05} },
+      craftsmanship: { position:[null,-.04,.18], rotation:[.08,1.18,.02], scale:.42, side:1, camera:[-.10,.10,5.55], lights:{specStone:5.0,specMetal:2.3,stoneSpot:3.0,key:1.95} },
+      reviews: { position:[null,.04,0], rotation:[.14,1.55,.04], scale:.26, side:-1, camera:[.14,.02,6.35], lights:{specStone:3.4,specMetal:1.8,stoneSpot:2.0,key:1.8} },
+      contact: { position:[null,-.04,.06], rotation:[.16,1.82,.02], scale:.34, side:-1, camera:[.10,.06,5.95], lights:{specStone:4.2,specMetal:2.1,stoneSpot:2.6,key:2.2} },
+      finale: { position:[0,null,0], rotation:[.20,2.0,.01], scale:.28, camera:[0,.02,6.05], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.4,key:2.25} },
+      seam: { scale:.27 }
+    },
+    mobile: {
+      xSide: .78,
+      hero: { position:[.22,-.42,0], rotation:[.22,.10,.01], scale:.74, camera:[0,.02,6.0], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.5,key:2.15} },
+      lift: { position:[.18,-.18,.08], rotation:[.18,.34,.02], scale:.64, camera:[.04,0,5.75], lights:{specStone:3.8,specMetal:1.9,stoneSpot:2.3,key:2.05} },
+      collections: { position:[null,0,0], rotation:[.12,.68,.04], scale:.26, side:-1, camera:[.20,.04,6.1], lights:{specStone:3.6,specMetal:1.9,stoneSpot:2.2,key:1.9} },
+      showcase: { position:[null,-.02,.02], rotation:[.10,.92,.03], scale:.28, side:1, camera:[-.16,.02,6.05], lights:{specStone:3.7,specMetal:1.9,stoneSpot:2.3,key:1.95} },
+      craftsmanship: { position:[null,-.06,.14], rotation:[.08,1.10,.02], scale:.36, side:1, camera:[-.08,.08,5.6], lights:{specStone:4.6,specMetal:2.1,stoneSpot:2.8,key:1.85} },
+      reviews: { position:[null,.02,0], rotation:[.14,1.48,.04], scale:.24, side:-1, camera:[.10,0,6.25], lights:{specStone:3.2,specMetal:1.7,stoneSpot:1.9,key:1.75} },
+      contact: { position:[null,-.06,.04], rotation:[.16,1.75,.02], scale:.26, side:-1, camera:[.08,.04,5.85], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.4,key:2.1} },
+      finale: { position:[0,null,0], rotation:[.20,1.92,.01], scale:.24, camera:[0,0,5.95], lights:{specStone:3.8,specMetal:1.9,stoneSpot:2.3,key:2.15} },
+      seam: { scale:.24 }
+    }
+  };
+  const deviceTier = () => (innerWidth < 768 ? 'mobile' : innerWidth < 1024 ? 'tablet' : 'desktop');
+  const isMobile = () => innerWidth < 768;
+
+  function ringRadiusPx(s){
+    const worldH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+    return s * (innerHeight / worldH);
+  }
+  function sideX(s, dir, xSideFixed){
+    if (xSideFixed != null) return dir * xSideFixed;
+    const pad = Math.min(48, Math.max(20, innerWidth * .04));
+    const contentEdge = Math.min(innerWidth, 1240) / 2 - pad;
+    const R = ringRadiusPx(s);
+    const cx = Math.min(contentEdge + 46 + R, innerWidth / 2 - R * 1.28 - 8);
+    return dir * Math.max(cx, contentEdge * .8) / (innerWidth / 2);
+  }
+  function resolveState(st, cfg){
+    const x = st.position[0] != null ? st.position[0] : sideX(st.scale, st.side || -1, cfg.xSide);
+    return {
+      x, y: st.position[1], z: st.position[2] || 0,
+      rx: st.rotation[0], ry: st.rotation[1], rz: st.rotation[2],
+      s: st.scale,
+      camX: st.camera[0], camY: st.camera[1], camZ: st.camera[2],
+      lights: st.lights
+    };
+  }
+  function waypoints(){
+    const vh = innerHeight;
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+    const docTop = el => el.getBoundingClientRect().top + scrollY;
+    const clamp01 = v => Math.max(0, Math.min(1, v));
+    const secCenter = el => clamp01((docTop(el) + el.offsetHeight / 2 - vh / 2) / maxScroll);
+    const seamAt = (el, f) => clamp01((docTop(el) - f * vh) / maxScroll);
+    const $ = id => document.getElementById(id);
+    const cat = $('categories'), feat = $('featured'),
+          rev = $('reviews'), contact = $('contact'),
+          footer = document.querySelector('.footer');
+    const footVp = docTop(footer) - maxScroll;
+    const restY = Math.max(-.55, Math.min(.55, 1 - 2 * footVp / vh));
+    const cfg = RING_STATES[deviceTier()];
+    const S = cfg.seam.scale;
+    const r = key => resolveState(cfg[key], cfg);
+    const cross = (el, fromKey, toKey, midRy) => {
+      const a = r(fromKey), b = r(toKey);
+      return [
+        {p:seamAt(el,.82), ...a, y:-.55, s:S},
+        {p:seamAt(el,.52), x:(a.x+b.x)/2, y:0, z:(a.z+b.z)*.5, s:S, ry:midRy,
+         rx:(a.rx+b.rx)*.5, rz:(a.rz+b.rz)*.5,
+         camX:(a.camX+b.camX)*.5, camY:(a.camY+b.camY)*.5, camZ:(a.camZ+b.camZ)*.5, lights:b.lights},
+        {p:seamAt(el,.22), ...b, y:.55, s:S},
+      ];
+    };
+    const hero=r('hero'), lift=r('lift'), col=r('collections'),
+          show=r('showcase'), craft=r('craftsmanship'),
+          revs=r('reviews'), cont=r('contact');
+    const fin=resolveState(cfg.finale,cfg); fin.y=restY;
+    const pts=[
+      {p:0,...hero},
+      {p:seamAt(cat,.95),...lift},
+      {p:secCenter(cat),...col},
+      ...cross(feat,'collections','showcase',(col.ry+show.ry)*.5+.22),
+      {p:secCenter(feat)*.55+secCenter(rev)*.45,...craft},
+      {p:secCenter(rev),...revs},
+      {p:secCenter(contact),...cont},
+      {p:1,...fin},
+    ];
+    for(let i=1;i<pts.length;i++) pts[i].p=Math.max(pts[i].p,pts[i-1].p+.003);
+    return pts;
+  }
+  let WPTS = waypoints();
+
+  const smooth = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+  function lerpObj(a, b, t){
+    const out = {};
+    for (const k of ['x','y','z','rx','ry','rz','s','camX','camY','camZ']){
+      const va = a[k] ?? 0, vb = b[k] ?? va;
+      out[k] = va + (vb - va) * t;
+    }
+    if (a.lights && b.lights){
+      out.lights = {};
+      for (const k of Object.keys(a.lights))
+        out.lights[k] = a.lights[k] + (b.lights[k] - a.lights[k]) * t;
+    } else out.lights = b.lights || a.lights;
+    return out;
+  }
+  function samplePath(p){
+    const w = WPTS;
+    if (p <= w[0].p) return w[0];
+    for (let i = 0; i < w.length-1; i++){
+      const a = w[i], b = w[i+1];
+      if (p >= a.p && p <= b.p)
+        return lerpObj(a, b, smooth((p - a.p) / (b.p - a.p)));
+    }
+    return w[w.length-1];
+  }
+
+  // המרת קואורדינטות מסך → world במישור z=0
+  function viewSize(){
+    const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+    return {h, w: h * camera.aspect};
+  }
+
+  let progress = 0, target = 0;
+  const mouse = {x:0, y:0, tx:0, ty:0};
+  addEventListener('mousemove', e => {
+    mouse.tx = (e.clientX / innerWidth  - .5) * 2;
+    mouse.ty = (e.clientY / innerHeight - .5) * 2;
+  }, {passive:true});
+
+  let ring = null, clockT = 0, running = false, booted = false;
+  let ringMats = [];
+  const intro = {v: 1};
+  const clock = new THREE.Clock();
+
+  /* --- צל מגע רך מתחת לטבעת — כדי שתיראה "עומדת" על העמוד ולא מרחפת --- */
+  function makeShadowTexture(){
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    g.addColorStop(0,   'rgba(0,0,0,.5)');
+    g.addColorStop(.55, 'rgba(0,0,0,.22)');
+    g.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 256, 256);
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    return tex;
+  }
+  const shadowTex = makeShadowTexture();
+  const shadowMat = new THREE.SpriteMaterial({map: shadowTex, transparent:true, depthWrite:false, opacity:0});
+  const shadowSprite = new THREE.Sprite(shadowMat);
+  shadowSprite.renderOrder = -1;
+  scene.add(shadowSprite);
+
+  // ברק היהלום מתעורר רק כשיש תנועה (גלילה/עכבר) — אף פעם לא זוהר קבוע ומוגזם
+  let prevProgress = 0, sparkle = 0;
+
+  // השהיית רינדור כשהטאב מוסתר — חוסך משאבים
+  document.addEventListener('visibilitychange', () => {
+    if (!booted) return;
+    if (document.hidden){ running = false; }
+    else if (!running){ running = true; clock.getDelta(); frame(); }
+  });
+
+  function frame(){
+    if (!running) return;
+    requestAnimationFrame(frame);
+    const dt = Math.min(clock.getDelta(), .05);
+    clockT += dt;
+
+    progress += (target - progress) * (reduceMotion ? 1 : Math.min(1, dt * 2.2));
+    mouse.x += (mouse.tx - mouse.x) * dt * 1.4;
+    mouse.y += (mouse.ty - mouse.y) * dt * 1.4;
+
+    const s = samplePath(progress);
+    const v = viewSize();
+    const floatAmt = isMobile() ? .018 : .032;
+    const floatY = reduceMotion ? 0 : Math.sin(clockT * .38) * floatAmt;
+    const floatX = reduceMotion ? 0 : Math.cos(clockT * .28) * floatAmt * .7;
+    const mouseAmt = isMobile() ? .06 : .10;
+
+    pivot.position.x = s.x * v.w * .5 + floatX + mouse.x * mouseAmt;
+    pivot.position.y = s.y * v.h * .5 + floatY - mouse.y * mouseAmt * .7;
+    pivot.position.z = s.z || 0;
+    pivot.scale.setScalar(s.s * intro.v);
+
+    camera.position.set(s.camX || 0, s.camY || 0, s.camZ || 6.2);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+
+    if (s.lights){
+      specStone.intensity = s.lights.specStone;
+      specMetal.intensity = s.lights.specMetal;
+      stoneSpot.intensity = s.lights.stoneSpot;
+      key.intensity = s.lights.key;
+    }
+    const heroS = RING_STATES[deviceTier()].hero.scale;
+    const scaleBoost = THREE.MathUtils.clamp(heroS / Math.max(s.s, 0.2), 1, 1.75);
+    if (ringMats.length){
+      const envBoost = JEWELRY_QUALITY.envMapIntensity * Math.min(1.22, 0.88 + scaleBoost * 0.12);
+      ringMats.forEach(m => { m.envMapIntensity = envBoost; });
+    }
+
+    if (ring && !reduceMotion){
+      const MAX_TILT = isMobile() ? .02 : .028;
+      ring.rotation.y = (s.ry || 0) + Math.sin(clockT * .18) * .04;
+      ring.rotation.x = (s.rx || JEWELRY_QUALITY.ringTiltX) + Math.sin(clockT * .15) * .025;
+      ring.rotation.z = (s.rz || 0) + Math.sin(clockT * .12) * .015;
+      pivot.rotation.y = mouse.x * MAX_TILT;
+      pivot.rotation.x = -mouse.y * MAX_TILT * .8;
+      pivot.rotation.z = 0;
+    }
+
+    if (ringMats.length){
+      const moveSpeed = Math.abs(progress - prevProgress) / Math.max(dt, .0001);
+      const mouseSpeed = Math.hypot(mouse.tx - mouse.x, mouse.ty - mouse.y);
+      prevProgress = progress;
+      const targetSparkle = reduceMotion ? 0 : Math.min(1, moveSpeed * 10 + mouseSpeed * 1.2);
+      sparkle += (targetSparkle - sparkle) * Math.min(1, dt * 3.5);
+      const ei = JEWELRY_QUALITY.emissiveBase + sparkle * (JEWELRY_QUALITY.emissiveSparkleMax - JEWELRY_QUALITY.emissiveBase);
+      ringMats.forEach(m => { if (m.emissiveMap) m.emissiveIntensity = ei; });
+    }
+
+    const ringDiam = 2 * s.s * intro.v;
+    shadowSprite.position.set(pivot.position.x, pivot.position.y - ringDiam * .48, -.35);
+    shadowSprite.scale.set(ringDiam * 1.5, ringDiam * .46, 1);
+    shadowMat.opacity = (reduceMotion ? .16 : .2) * intro.v * Math.min(1, s.s / heroS + .4);
+
+    renderer.render(scene, camera);
+  }
+
+  function resize(){
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    setRendererQuality();
+    renderer.setSize(innerWidth, innerHeight);
+    WPTS = waypoints();
+    ScrollTrigger.refresh();
+  }
+  addEventListener('resize', resize, {passive:true});
+
+  let scrollTriggerInst = null;
+  function bindScroll(){
+    if (scrollTriggerInst) scrollTriggerInst.kill();
+    scrollTriggerInst = ScrollTrigger.create({
+      start: 0,
+      end: () => document.documentElement.scrollHeight - innerHeight,
+      scrub: reduceMotion ? false : JEWELRY_QUALITY.scrollScrub,
+      onUpdate: self => { target = self.progress; },
+      onRefresh: self => { WPTS = waypoints(); target = self.progress; }
+    });
+  }
+  bindScroll();
+
+  /* --- lazy-load של המודל אחרי שהעמוד עלה --- */
+  async function tryLoad(){
+    let lastErr;
+    for (const url of MODEL_URLS){
+      try { return await loadGLB(url, THREE, envMap, renderer); }
+      catch(e){ lastErr = e; }
+    }
+    throw lastErr;
+  }
+  function boot(){
+    tryLoad().then(mesh => {
+      ring = mesh;
+      ring.rotation.x = JEWELRY_QUALITY.ringTiltX;
+      ringMats = ring.userData.jewelryMats || [];
+      pivot.add(ring);
+      booted = true;
+      running = true;
+      clock.start();
+      frame();
+      canvas.classList.add('on');
+    }).catch(err => {
+      console.warn('Ring model failed to load — site continues without 3D:', err);
+      dispose();
+      canvas.remove();
+    });
+  }
+  if (document.readyState === 'complete') setTimeout(boot, 300);
+  else addEventListener('load', () => setTimeout(boot, 300));
+
+  /* --- ניקוי משאבים --- */
+  function dispose(){
+    running = false;
+    if (scrollTriggerInst) scrollTriggerInst.kill();
+    scene.traverse(o => {
+      if (o.isMesh){
+        if (o.geometry) o.geometry.dispose();
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => {
+          if (!m) return;
+          Object.values(m).forEach(v => { if (v && v.isTexture) v.dispose(); });
+          m.dispose();
+        });
+      }
+    });
+    if (scene.environment) scene.environment.dispose();
+    shadowTex.dispose();
+    shadowMat.dispose();
+    renderer.dispose();
+  }
+  addEventListener('pagehide', dispose, {once:true});
+})();
+</script>
+</body>
+</html>
