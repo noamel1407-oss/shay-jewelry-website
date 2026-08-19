@@ -1370,6 +1370,12 @@ const CONFIG = {
 
   /* Smoothing of the normalised scroll progress (higher = tighter). */
   scrollDamping: 5.5,
+  /* Mobile follows scroll ~18% more slowly so the ring glides instead of
+     tracking the finger 1:1. Desktop keeps the original damping. */
+  mobileScrollDamping: 4.5,
+  /* Extra pose lerp on mobile for x/y/rotation/scale. High enough to avoid
+     noticeable lag, low enough for a light premium inertia. */
+  poseDamping: 8.2,
   /* Below this delta the timeline is considered settled and the loop parks. */
   settleEpsilon: 0.00015,
 
@@ -1461,26 +1467,29 @@ const DESKTOP_RING_PATH = [
    mid-section, keep ≥55% visible, fade only at the finale. ax/ay are
    authored in viewport space by resolveKeyframe (not copied from desktop). */
 const MOBILE_RING_PATH = [
-  { id: 'hero',       zone: 'hero',       pin: true, fill: 1.06, turn:  0.00, tilt:  0.00, roll:  0.010, dolly: 0.94, opacity: 1.00, env: 1.08, key: 1.08, ax:  0.00, ay:  0.02 },
-  { id: 'heroLift',   zone: 'hero',       pin: true, fill: 0.98, turn: -0.16, tilt: -0.02, roll:  0.008, dolly: 0.96, opacity: 1.00, env: 1.10, key: 1.10, ax:  0.10, ay: -0.08 },
-  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.88, turn: -0.32, tilt: -0.03, roll:  0.000, dolly: 1.00, opacity: 0.82, env: 1.04, key: 1.04, ax:  0.55, ay: -0.28 },
-  { id: 'catIn',      zone: 'categories',            fill: 0.94, turn: -0.42, tilt:  0.06, roll: -0.04, dolly: 0.88, opacity: 0.92, env: 1.14, key: 1.16, ax: -1.00, ay:  0.58 },
-  { id: 'categories', zone: 'categories',            fill: 1.12, turn:  0.16, tilt:  0.10, roll: -0.02, dolly: 0.76, opacity: 1.00, env: 1.24, key: 1.26, ax:  0.20, ay:  0.00 },
-  { id: 'catOut',     zone: 'categories',            fill: 0.96, turn:  0.42, tilt:  0.05, roll:  0.03, dolly: 0.86, opacity: 0.94, env: 1.14, key: 1.14, ax: -0.70, ay: -0.52 },
-  { id: 'featIn',     zone: 'featured',              fill: 0.90, turn:  0.28, tilt:  0.07, roll: -0.03, dolly: 0.88, opacity: 0.92, env: 1.16, key: 1.16, ax: -0.95, ay:  0.50 },
-  { id: 'feature',    zone: 'featured',              fill: 0.88, turn:  0.52, tilt:  0.10, roll: -0.03, dolly: 0.90, opacity: 0.95, env: 1.20, key: 1.18, ax: -0.85, ay:  0.02 },
-  { id: 'featOut',    zone: 'featured',              fill: 0.90, turn:  0.70, tilt:  0.04, roll:  0.02, dolly: 0.88, opacity: 0.92, env: 1.12, key: 1.12, ax: -0.50, ay: -0.48 },
-  { id: 'revIn',      zone: 'reviews',               fill: 0.90, turn:  0.40, tilt:  0.08, roll:  0.03, dolly: 0.88, opacity: 0.90, env: 1.12, key: 1.14, ax: -0.80, ay:  0.48 },
-  { id: 'reviews',    zone: 'reviews',               fill: 0.94, turn:  0.10, tilt:  0.10, roll:  0.04, dolly: 0.84, opacity: 0.94, env: 1.16, key: 1.18, ax: -0.35, ay:  0.02 },
-  { id: 'revOut',     zone: 'reviews',               fill: 0.90, turn: -0.22, tilt:  0.04, roll:  0.02, dolly: 0.90, opacity: 0.90, env: 1.10, key: 1.10, ax: -0.90, ay: -0.46 },
-  { id: 'ctaIn',      zone: 'contact',               fill: 0.86, turn: -0.08, tilt:  0.06, roll:  0.02, dolly: 0.92, opacity: 0.90, env: 1.14, key: 1.16, ax: -1.05, ay:  0.42 },
-  { id: 'cta',        zone: 'contact',               fill: 0.86, turn: -0.22, tilt:  0.08, roll:  0.02, dolly: 0.92, opacity: 0.92, env: 1.16, key: 1.16, ax: -1.10, ay:  0.08 },
-  { id: 'brand',      zone: 'visual',                fill: 1.04, turn: -0.58, tilt:  0.14, roll:  0.05, dolly: 0.78, opacity: 0.96, env: 1.22, key: 1.20, ax: -0.90, ay:  0.00 },
-  { id: 'newsIn',     zone: 'footer',                fill: 0.86, turn: -0.30, tilt:  0.06, roll:  0.02, dolly: 0.94, opacity: 0.88, env: 1.12, key: 1.12, ax: -1.15, ay:  0.42 },
-  { id: 'news',       zone: 'footer',                fill: 0.86, turn: -0.18, tilt:  0.05, roll:  0.01, dolly: 0.96, opacity: 0.88, env: 1.10, key: 1.10, ax: -1.20, ay:  0.18 },
-  { id: 'footIn',     zone: 'footer',                fill: 0.90, turn: -0.36, tilt:  0.08, roll:  0.02, dolly: 0.92, opacity: 0.86, env: 1.12, key: 1.12, ax: -0.55, ay: -0.05 },
-  { id: 'footer',     zone: 'footer',                fill: 0.84, turn: -0.48, tilt:  0.06, roll:  0.02, dolly: 0.98, opacity: 0.72, env: 1.08, key: 1.08, ax: -1.05, ay: -0.22 },
-  { id: 'finale',     zone: 'footer',                fill: 0.78, turn: -0.62, tilt:  0.03, roll:  0.01, dolly: 1.04, opacity: 0.00, env: 1.04, key: 1.04, ax: -1.25, ay: -0.38 },
+  /* One continuous companion: opacity stays live until the final footer fade.
+     turn advances slowly in one direction; fill stays inside ~0.92–1.05;
+     ax weaves left → slightly inward → left, never a zigzag. */
+  { id: 'hero',       zone: 'hero',       pin: true, fill: 1.02, turn:  0.00, tilt:  0.00, roll:  0.008, dolly: 0.94, opacity: 1.00, env: 1.08, key: 1.08, ax:  0.00, ay:  0.02 },
+  { id: 'heroLift',   zone: 'hero',       pin: true, fill: 1.00, turn: -0.05, tilt: -0.01, roll:  0.006, dolly: 0.95, opacity: 1.00, env: 1.10, key: 1.10, ax:  0.06, ay: -0.06 },
+  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.98, turn: -0.10, tilt:  0.00, roll:  0.004, dolly: 0.96, opacity: 1.00, env: 1.08, key: 1.08, ax: -0.18, ay: -0.10 },
+  { id: 'catIn',      zone: 'categories',            fill: 0.96, turn: -0.14, tilt:  0.03, roll:  0.000, dolly: 0.94, opacity: 1.00, env: 1.12, key: 1.12, ax: -0.72, ay:  0.10 },
+  { id: 'categories', zone: 'categories',            fill: 1.04, turn: -0.18, tilt:  0.04, roll: -0.006, dolly: 0.92, opacity: 1.00, env: 1.18, key: 1.18, ax: -0.38, ay:  0.02 },
+  { id: 'catOut',     zone: 'categories',            fill: 1.00, turn: -0.22, tilt:  0.04, roll: -0.004, dolly: 0.93, opacity: 1.00, env: 1.14, key: 1.14, ax: -0.82, ay: -0.06 },
+  { id: 'featIn',     zone: 'featured',              fill: 0.98, turn: -0.26, tilt:  0.05, roll:  0.000, dolly: 0.93, opacity: 1.00, env: 1.14, key: 1.14, ax: -0.68, ay:  0.06 },
+  { id: 'feature',    zone: 'featured',              fill: 1.02, turn: -0.30, tilt:  0.05, roll:  0.004, dolly: 0.92, opacity: 1.00, env: 1.16, key: 1.16, ax: -0.42, ay:  0.00 },
+  { id: 'featOut',    zone: 'featured',              fill: 0.98, turn: -0.34, tilt:  0.04, roll:  0.006, dolly: 0.94, opacity: 1.00, env: 1.12, key: 1.12, ax: -0.86, ay: -0.08 },
+  { id: 'revIn',      zone: 'reviews',               fill: 0.96, turn: -0.36, tilt:  0.05, roll:  0.008, dolly: 0.94, opacity: 1.00, env: 1.12, key: 1.12, ax: -0.70, ay:  0.06 },
+  { id: 'reviews',    zone: 'reviews',               fill: 1.02, turn: -0.38, tilt:  0.05, roll:  0.010, dolly: 0.93, opacity: 1.00, env: 1.14, key: 1.14, ax: -0.40, ay:  0.00 },
+  { id: 'revOut',     zone: 'reviews',               fill: 0.96, turn: -0.40, tilt:  0.04, roll:  0.008, dolly: 0.94, opacity: 1.00, env: 1.10, key: 1.10, ax: -0.88, ay: -0.06 },
+  { id: 'ctaIn',      zone: 'contact',               fill: 0.94, turn: -0.42, tilt:  0.04, roll:  0.008, dolly: 0.95, opacity: 1.00, env: 1.12, key: 1.12, ax: -1.00, ay:  0.04 },
+  { id: 'cta',        zone: 'contact',               fill: 0.94, turn: -0.44, tilt:  0.05, roll:  0.010, dolly: 0.95, opacity: 1.00, env: 1.14, key: 1.14, ax: -1.08, ay:  0.08 },
+  { id: 'brand',      zone: 'visual',                fill: 0.96, turn: -0.46, tilt:  0.06, roll:  0.012, dolly: 0.94, opacity: 1.00, env: 1.16, key: 1.16, ax: -0.92, ay:  0.00 },
+  { id: 'newsIn',     zone: 'footer',                fill: 0.94, turn: -0.48, tilt:  0.05, roll:  0.010, dolly: 0.95, opacity: 0.98, env: 1.12, key: 1.12, ax: -1.10, ay:  0.08 },
+  { id: 'news',       zone: 'footer',                fill: 0.94, turn: -0.50, tilt:  0.04, roll:  0.008, dolly: 0.96, opacity: 0.96, env: 1.10, key: 1.10, ax: -1.14, ay:  0.10 },
+  { id: 'footIn',     zone: 'footer',                fill: 0.94, turn: -0.52, tilt:  0.04, roll:  0.008, dolly: 0.96, opacity: 0.94, env: 1.10, key: 1.10, ax: -0.78, ay:  0.00 },
+  { id: 'footer',     zone: 'footer',                fill: 0.92, turn: -0.54, tilt:  0.03, roll:  0.006, dolly: 0.98, opacity: 0.78, env: 1.08, key: 1.08, ax: -0.98, ay: -0.12 },
+  { id: 'finale',     zone: 'footer',                fill: 0.92, turn: -0.56, tilt:  0.02, roll:  0.004, dolly: 1.00, opacity: 0.00, env: 1.04, key: 1.04, ax: -1.12, ay: -0.22 },
 ];
 
 /* ============================================================
@@ -1944,6 +1953,8 @@ function presetFor(w) {
 let preset = presetFor(innerWidth);
 
 let keyframes = [];
+let usingMobilePath = false;
+let poseReady = false;
 
 function buildTimeline() {
   measureZones();
@@ -1953,7 +1964,9 @@ function buildTimeline() {
   camera.updateProjectionMatrix();
 
   /* Same visual story on every device; only the authored coordinates differ. */
-  const path = innerWidth < 768 ? MOBILE_RING_PATH : DESKTOP_RING_PATH;
+  usingMobilePath = innerWidth < 768;
+  poseReady = false;
+  const path = usingMobilePath ? MOBILE_RING_PATH : DESKTOP_RING_PATH;
 
   const categories = document.getElementById('categories');
   const featured = document.getElementById('featured');
@@ -1962,7 +1975,6 @@ function buildTimeline() {
   const contactVisual = document.querySelector('.contact-visual');
   const footerEl = document.querySelector('.footer');
   const footerNews = document.querySelector('.footer-news');
-  const mobilePath = innerWidth < 768;
 
   /* Hero exit is timed in viewport-heights so it always breathes across a
      full screen of scroll. Mid-page stops lock to section centres so the
@@ -1990,8 +2002,8 @@ function buildTimeline() {
     news: footerNews ? progressAtCentre(footerNews, 0.0) : (footerEl ? progressAtCentre(footerEl, -0.10) : 0.92),
     footIn: footerEl ? progressAtCentre(footerEl, 0.14) : 0.94,
     footer: footerEl ? progressAtCentre(footerEl, 0.34) : 0.96,
-    finale: mobilePath
-      ? (footerEl ? progressAtCentre(footerEl, 0.55) : 0.99)
+    finale: usingMobilePath
+      ? (footerEl ? progressAtCentre(footerEl, 0.62) : 0.99)
       : (contact ? progressAtCentre(contact, 0.48) : 0.96),
   };
 
@@ -2030,7 +2042,7 @@ function buildTimeline() {
   }
   kf.sort((a, b) => a.p - b.p);
   /* keep keyframes strictly increasing so interpolation can never divide by 0 */
-  for (let i = 1; i < kf.length; i++) kf[i].p = Math.max(kf[i].p, kf[i - 1].p + 0.004);
+  for (let i = 1; i < kf.length; i++) kf[i].p = Math.max(kf[i].p, kf[i - 1].p + 0.008);
   /* fade out only if the authored path does not already end at opacity 0 */
   if (kf.length && kf[kf.length - 1].opacity > 0.002) {
     const last = kf[kf.length - 1];
@@ -2057,38 +2069,50 @@ function resolveKeyframe(k, out) {
   const availW = Math.max(24, r.w - pad * 2);
   /* projected width changes as the ring turns — account for it explicitly */
   const turnW = Math.max(0.35, RING_BOX.w * Math.abs(Math.cos(k.turn)) + RING_BOX.d * Math.abs(Math.sin(k.turn)));
-  const mobileSide = cssW <= 768 && k.zone !== 'hero';
+  const mobileSide = usingMobilePath && k.zone !== 'hero';
   let hpx;
   if (mobileSide) {
-    /* Size the MODEL by viewport width (28–38%), not the gutter.
-       Peak fill ≈ 35–38vw (~130–160px on iPhone); dense UI stays ≥ 28vw. */
-    const fillMul = Math.max(0.82, Math.min(1.12, k.fill));
-    let ringW = cssW * 0.35 * fillMul;
-    ringW = Math.min(Math.max(ringW, cssW * 0.28), cssW * 0.38);
+    /* ~10% larger than the previous 35vw companion, still inside 31–42vw.
+       fill stays in 0.92–1.05 so scale changes stay almost invisible. */
+    const fillMul = Math.max(0.92, Math.min(1.05, k.fill));
+    let ringW = cssW * 0.385 * fillMul;
+    ringW = Math.min(Math.max(ringW, cssW * 0.31), cssW * 0.42);
     hpx = ringW / turnW;
-    hpx = Math.min(hpx, cssH * Math.max(preset.maxVh, 0.58));
+    hpx = Math.min(hpx, cssH * Math.max(preset.maxVh, 0.64));
   } else {
     hpx = k.fill * availH * preset.fill;
     hpx = Math.min(hpx, cssH * preset.maxVh);
     if (hpx * turnW > availW) hpx = availW / turnW;
+    if (usingMobilePath) hpx *= 1.10;
   }
   hpx /= 1.02;
   out.hpx = hpx;
   let x = r.x + r.w * 0.5 + (k.ax * availW * 0.5);
   let y = r.y + r.h * 0.5 + (k.ay * availH * 0.5);
   if (mobileSide) {
-    /* Left-side companion. ax -1 = 10–30% off the left edge,
-       ax 0 = main lane, ax +1 = a step inward. Always keep ≥65% visible. */
+    /* Viewport-stable companion: Y no longer follows section rects, so the
+       ring never teleports when crossing categories → featured → reviews.
+       ax weaves the left lane; denser UI stays further left. */
     const ringW = hpx * turnW;
-    const peakX = cssW * 0.17;
-    x = peakX + k.ax * cssW * 0.10;
+    const peakX = cssW * 0.155;
+    x = peakX + k.ax * cssW * 0.085;
     const minVisible = 0.70;
     const minX = ringW * (minVisible - 0.5);
-    const maxX = cssW * 0.34;
+    const maxX = cssW * 0.30;
     x = Math.min(maxX, Math.max(minX, x));
-    y = r.y + r.h * 0.5 + k.ay * r.h * 0.36;
+    y = cssH * (0.50 + k.ay * 0.10);
     const halfH = hpx * 0.32;
-    y = Math.min(cssH - halfH * 0.15, Math.max(halfH * 0.15, y));
+    y = Math.min(cssH - halfH * 0.18, Math.max(halfH * 0.18, y));
+  } else if (usingMobilePath && k.zone === 'hero' && k.id !== 'hero') {
+    /* Drift from the hero product shot toward the left companion lane
+       so the first section crossing is a continuation, not a teleport. */
+    const ringW = hpx * turnW;
+    const heroX = r.x + r.w * 0.5;
+    const laneX = cssW * 0.155 + k.ax * cssW * 0.085;
+    const mix = k.id === 'heroLift' ? 0.28 : 0.72;
+    x = heroX + (laneX - heroX) * mix;
+    x = Math.min(cssW * 0.30, Math.max(ringW * 0.20, x));
+    y = r.y + r.h * 0.5 + (k.ay * availH * 0.5);
   } else if (k.zone !== 'hero') {
     const halfH = hpx * 0.42;
     const halfW = hpx * turnW * 0.42;
@@ -2106,6 +2130,19 @@ function resolveKeyframe(k, out) {
 
 const _kA = { x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1 };
 const _kB = { x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1 };
+const _k0 = { x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1 };
+const _k3 = { x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1 };
+
+function catmullRom(p0, p1, p2, p3, t) {
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return 0.5 * (
+    (2 * p1) +
+    (-p0 + p2) * t +
+    (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
+    (-p0 + 3 * p1 - 3 * p2 + p3) * t3
+  );
+}
 
 function samplePath(p) {
   const kf = keyframes;
@@ -2122,12 +2159,29 @@ function samplePath(p) {
   for (let i = 0; i < kf.length - 1; i++) {
     const a = kf[i], b = kf[i + 1];
     if (p < a.p || p > b.p) continue;
-    const t = easeInOut((p - a.p) / (b.p - a.p));
+    const rawT = (p - a.p) / (b.p - a.p);
+    /* Mobile uses linear segment time so the ring never eases-to-a-stop
+       at every waypoint. Desktop keeps the original cubic ease. */
+    const t = usingMobilePath ? rawT : easeInOut(rawT);
     if (!resolveKeyframe(a, _kA) || !resolveKeyframe(b, _kB)) { sample.opacity = 0; return; }
-    sample.x = _kA.x + (_kB.x - _kA.x) * t;
-    sample.y = _kA.y + (_kB.y - _kA.y) * t;
-    sample.hpx = _kA.hpx + (_kB.hpx - _kA.hpx) * t;
-    sample.dolly = _kA.dolly + (_kB.dolly - _kA.dolly) * t;
+    if (usingMobilePath) {
+      const k0 = kf[Math.max(0, i - 1)];
+      const k3 = kf[Math.min(kf.length - 1, i + 2)];
+      if (!resolveKeyframe(k0, _k0) || !resolveKeyframe(k3, _k3)) { sample.opacity = 0; return; }
+      sample.x = catmullRom(_k0.x, _kA.x, _kB.x, _k3.x, t);
+      sample.y = catmullRom(_k0.y, _kA.y, _kB.y, _k3.y, t);
+      sample.hpx = catmullRom(_k0.hpx, _kA.hpx, _kB.hpx, _k3.hpx, t);
+      sample.dolly = catmullRom(_k0.dolly, _kA.dolly, _kB.dolly, _k3.dolly, t);
+      if (a.zone !== 'hero' || b.zone !== 'hero') {
+        sample.x = Math.min(cssW * 0.30, Math.max(cssW * 0.02, sample.x));
+        sample.y = Math.min(cssH * 0.82, Math.max(cssH * 0.18, sample.y));
+      }
+    } else {
+      sample.x = _kA.x + (_kB.x - _kA.x) * t;
+      sample.y = _kA.y + (_kB.y - _kA.y) * t;
+      sample.hpx = _kA.hpx + (_kB.hpx - _kA.hpx) * t;
+      sample.dolly = _kA.dolly + (_kB.dolly - _kA.dolly) * t;
+    }
     sample.opacity = _kA.opacity + (_kB.opacity - _kA.opacity) * t;
     sample.env = _kA.env + (_kB.env - _kA.env) * t;
     sample.key = _kA.key + (_kB.key - _kA.key) * t;
@@ -2146,6 +2200,42 @@ let reveal = 0;                 // 0 -> 1 crossfade from the poster to WebGL
 let idleUntil = 0.12;           // idle drift only runs while the hero pose is live
 const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
 const _q = new THREE.Quaternion(), _qIdle = new THREE.Quaternion();
+const pose = {
+  x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1,
+  q: new THREE.Quaternion(),
+};
+
+function syncPose() {
+  pose.x = sample.x;
+  pose.y = sample.y;
+  pose.hpx = sample.hpx;
+  pose.dolly = sample.dolly;
+  pose.opacity = sample.opacity;
+  pose.env = sample.env;
+  pose.key = sample.key;
+  pose.q.copy(sample.q);
+  poseReady = true;
+}
+
+function smoothPose(dt) {
+  if (!usingMobilePath || reduceMotion) {
+    syncPose();
+    return;
+  }
+  if (!poseReady) {
+    syncPose();
+    return;
+  }
+  const a = 1 - Math.exp(-dt * CONFIG.poseDamping);
+  pose.x += (sample.x - pose.x) * a;
+  pose.y += (sample.y - pose.y) * a;
+  pose.hpx += (sample.hpx - pose.hpx) * a;
+  pose.dolly += (sample.dolly - pose.dolly) * a;
+  pose.opacity += (sample.opacity - pose.opacity) * a;
+  pose.env += (sample.env - pose.env) * a;
+  pose.key += (sample.key - pose.key) * a;
+  pose.q.slerp(sample.q, a);
+}
 
 let lastT = 0;
 function tick() {
@@ -2193,11 +2283,15 @@ function frame() {
 
   const before = progress;
   if (reduceMotion) progress = targetProgress;
-  else progress += (targetProgress - progress) * (1 - Math.exp(-dt * CONFIG.scrollDamping));
+  else {
+    const damp = usingMobilePath ? CONFIG.mobileScrollDamping : CONFIG.scrollDamping;
+    progress += (targetProgress - progress) * (1 - Math.exp(-dt * damp));
+  }
 
   samplePath(progress);
+  smoothPose(dt);
 
-  const visible = sample.opacity > 0.002;
+  const visible = pose.opacity > 0.002;
   pivot.visible = visible;
   shadowSprite.visible = visible;
 
@@ -2206,15 +2300,15 @@ function frame() {
   const idleOn = visible && !reduceMotion && progress < idleUntil;
 
   if (visible) {
-    camera.position.z = preset.dist * sample.dolly;
+    camera.position.z = preset.dist * pose.dolly;
     camera.updateProjectionMatrix();
 
     const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5)) * camera.position.z;
     const ppu = cssH / viewH;                       // css px per world unit at z = 0
 
-    const scale = sample.hpx / ppu;
-    const wx = (sample.x - cssW * 0.5) / ppu;
-    const wy = (cssH * 0.5 - sample.y) / ppu;
+    const scale = pose.hpx / ppu;
+    const wx = (pose.x - cssW * 0.5) / ppu;
+    const wy = (cssH * 0.5 - pose.y) / ppu;
 
     let bobX = 0, bobY = 0;
     if (idleOn) {
@@ -2230,7 +2324,7 @@ function frame() {
     pivot.position.set(wx + bobX, wy + bobY, 0);
     pivot.scale.setScalar(scale);
 
-    _q.copy(sample.q);
+    _q.copy(pose.q);
     if (!reduceMotion) {
       if (idleOn) {
         _qIdle.setFromAxisAngle(AXIS_Y, Math.sin(idleClock * 0.27) * 0.035 * preset.idle);
@@ -2250,25 +2344,28 @@ function frame() {
     const S = CONFIG.shadow;
     shadowSprite.position.set(pivot.position.x, pivot.position.y - scale * S.drop, -0.4);
     shadowSprite.scale.set(scale * S.spread, scale * S.height, 1);
-    shadowMat.opacity = S.opacity * sample.opacity;
+    shadowMat.opacity = S.opacity * pose.opacity;
 
     /* Mobile gold reads darker on cream/black phones — lift key/env only,
        materials stay authored. Desktop lighting is unchanged. */
     const lightBoost = cssW <= 768 ? 1.22 : 1;
-    scene.environmentIntensity = CONFIG.lighting.envIntensity * sample.env * lightBoost;
-    keyLight.intensity = BASE_INTENSITY.key * sample.key * lightBoost;
-    rimLight.intensity = BASE_INTENSITY.rim * (0.85 + sample.key * 0.15) * lightBoost;
-    sparkLight.intensity = BASE_INTENSITY.spark * sample.key * lightBoost;
+    scene.environmentIntensity = CONFIG.lighting.envIntensity * pose.env * lightBoost;
+    keyLight.intensity = BASE_INTENSITY.key * pose.key * lightBoost;
+    rimLight.intensity = BASE_INTENSITY.rim * (0.85 + pose.key * 0.15) * lightBoost;
+    sparkLight.intensity = BASE_INTENSITY.spark * pose.key * lightBoost;
 
     renderer.render(scene, camera);
   }
 
   if (ready && reveal < 1) reveal = Math.min(1, reveal + dt / 0.85);
-  canvas.style.opacity = ready ? (sample.opacity * reveal).toFixed(4) : '0';
+  canvas.style.opacity = ready ? (pose.opacity * reveal).toFixed(4) : '0';
 
   /* park the loop once the timeline has settled and nothing else moves */
   const moving = Math.abs(targetProgress - progress) > CONFIG.settleEpsilon
     || Math.abs(progress - before) > CONFIG.settleEpsilon
+    || Math.abs(pose.x - sample.x) > 0.2
+    || Math.abs(pose.y - sample.y) > 0.2
+    || Math.abs(pose.hpx - sample.hpx) > 0.15
     || Math.hypot(pointer.tx - pointer.x, pointer.ty - pointer.y) > 0.002
     || (ready && reveal < 1);
   if (!moving && !idleOn) {
@@ -2360,7 +2457,7 @@ canvas.addEventListener('webglcontextrestored', () => {
 if (location.search.includes('ringdebug')) {
   /* settle the damped follow instantly so an audit reads the exact pose for a
      scroll offset instead of whatever the easing happens to be passing through */
-  window.__ringSnap = () => { progress = targetProgress; samplePath(progress); };
+  window.__ringSnap = () => { progress = targetProgress; samplePath(progress); syncPose(); };
   /* Render and read back in one turn — the drawing buffer is still intact at
      this point, so no preserveDrawingBuffer (and its memory cost) is needed in
      production. Used to regenerate the hero poster from the real scene. */
