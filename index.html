@@ -502,6 +502,22 @@ section{position:relative}
 .rev-when{font-size:12.5px;color:var(--text-dark-2);margin-inline-start:8px}
 .rev-text{font-size:14.5px;line-height:1.9;color:#3a352c;flex:1}
 .rev-foot{display:flex;align-items:center;justify-content:space-between;color:var(--text-dark-2);font-size:14px;border-top:1px solid rgba(0,0,0,.05);padding-top:10px}
+.rev-like{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:2px;border:none;background:transparent;cursor:pointer;
+  color:var(--text-dark-2);line-height:1;
+  transition:transform .25s var(--ease-cine),color .25s ease;
+}
+.rev-like:hover{transform:scale(1.15)}
+.rev-like:focus-visible{outline:2px solid #8a6a35;outline-offset:2px;border-radius:2px}
+.rev-like-icon{
+  width:18px;height:18px;display:block;
+  fill:transparent;stroke:currentColor;stroke-width:1.6;
+  transition:fill .35s ease,stroke .35s ease,transform .2s ease;
+}
+.rev-like.is-liked{color:#d32f2f}
+.rev-like.is-liked .rev-like-icon{fill:#d32f2f;stroke:#d32f2f}
+.rev-like:active .rev-like-icon{transform:scale(.85)}
 .rev-more{text-align:center;margin-top:clamp(36px,4vw,54px)}
 .btn-dark-ghost{
   background:transparent;color:#3d382f;border:1px solid rgba(120,95,55,.45);
@@ -565,6 +581,12 @@ textarea.field{min-height:132px;resize:vertical}
 .footer-news p{color:var(--text-2);font-size:14px;margin-bottom:18px}
 .news-row{display:flex;gap:10px}
 .news-row .field{padding:12px 16px;font-size:14px}
+.newsletter-form-status{
+  font-size:14px;line-height:1.6;text-align:right;min-height:1.6em;margin-top:12px;
+  color:var(--gold-2);transition:opacity .35s var(--ease-lux);
+}
+.newsletter-form-status.is-error{color:#e8a4a4}
+.news-row.is-submitting .btn-sm{opacity:.7;pointer-events:none}
 .btn-sm{padding:12px 24px;font-size:14px}
 .footer-legal{
   margin-top:clamp(44px,5vw,64px);padding:28px clamp(18px,5vw,72px) 24px;
@@ -726,13 +748,14 @@ textarea.field{min-height:132px;resize:vertical}
 
 /* ---- ring corridors: measured empty gutters the 3D path travels through ----
    Content keeps its hierarchy; the ring adapts into the reserved negative space.
-   Mobile gets a slim edge strip; tablet/desktop open a wider cinematic lane. */
+   Mobile edge strip sized so a ~18–25% viewport ring stays mostly visible;
+   tablet/desktop open a wider cinematic lane. Card grids are unchanged. */
 @media (max-width:599.98px){
   .categories .wrap,
   .featured .wrap,
   .reviews .wrap,
   .contact .wrap{
-    margin-inline-end:clamp(52px,14vw,78px);
+    margin-inline-end:clamp(68px,20vw,92px);
   }
 }
 @media (min-width:600px) and (max-width:1023.98px){
@@ -922,7 +945,7 @@ textarea.field{min-height:132px;resize:vertical}
         </div>
         <div><span class="rev-stars">★★★★★</span><span class="rev-when">לפני 4 שנים</span></div>
         <p class="rev-text">מאוד מרוצים! השירות מדהים! מחיר ומקצועי. שי מקסים ואדיב, מקשיב ומתחשב בכל בקשה. מומלץ בחום!</p>
-        <div class="rev-foot"><span>🙏 1</span><span>♡</span></div>
+        <div class="rev-foot"><span>🙏 1</span><button type="button" class="rev-like" data-review-id="danielle-wiseman" aria-label="לייק לביקורת" aria-pressed="false"><svg class="rev-like-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div>
       </article>
       <article class="rev-card reveal">
         <div class="rev-head">
@@ -934,7 +957,7 @@ textarea.field{min-height:132px;resize:vertical}
         </div>
         <div><span class="rev-stars">★★★★★</span><span class="rev-when">לפני 3 שנים</span></div>
         <p class="rev-text">שי תכשיטי זהב בטבריה — חנות עם מבחר עצום, ומעל כולם לקוחות מרוצים... שירות... איכות... יחס. והכי חשוב — שווה לכל ממש כך... תודה על שירות נפלא 💞🙏</p>
-        <div class="rev-foot"><span>🙏</span><span>♡</span></div>
+        <div class="rev-foot"><span>🙏</span><button type="button" class="rev-like" data-review-id="ilanit-zoar" aria-label="לייק לביקורת" aria-pressed="false"><svg class="rev-like-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div>
       </article>
       <article class="rev-card reveal">
         <div class="rev-head">
@@ -946,11 +969,11 @@ textarea.field{min-height:132px;resize:vertical}
         </div>
         <div><span class="rev-stars">★★★★★</span><span class="rev-when">לפני 3 שנים</span></div>
         <p class="rev-text">היי, קניתי לפני יומיים שרשרת לבעלי, וברגע שנכנסתי הייתה קנייה. שי הבעלים נתן שירות מסור ועזר לי למצוא בדיוק מה שרציתי. תודה רבה!</p>
-        <div class="rev-foot"><span>🙏 1</span><span>♡</span></div>
+        <div class="rev-foot"><span>🙏 1</span><button type="button" class="rev-like" data-review-id="shani-turgeman" aria-label="לייק לביקורת" aria-pressed="false"><svg class="rev-like-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div>
       </article>
     </div>
     <div class="rev-more reveal">
-      <a href="#" class="btn btn-dark-ghost">לקריאת כל הביקורות</a>
+      <a href="https://www.google.com/search?q=%D7%A9%D7%99+%D7%AA%D7%9B%D7%A9%D7%99%D7%98%D7%99%D7%9D+%D7%98%D7%91%D7%A8%D7%99%D7%94&oq=%D7%A9%D7%99+%D7%AA%D7%9B%D7%A9%D7%99%D7%98%D7%99%D7%9D+%D7%98%D7%91%D7%A8%D7%99%D7%94&gs_lcrp=EgZjaHJvbWUqDAgAEAAYExjjAhiABDIMCAAQABgTGOMCGIAEMg8IARAuGBMYrwEYxwEYgAQyCggCEAAYExgWGB4yCggDEAAYExgWGB4yCggEEAAYExgWGB4yCggFEAAYExgWGB4yCggGEAAYgAQYogQyBwgHEAAY7wUyCggIEAAYgAQYogQyCwgJEAAY7wXSAQg2ODY4ajBqN6gCCLACAfEFzEFYOv1Ft9s&sourceid=chrome&source=chrome.ob&ie=UTF-8#" class="btn btn-dark-ghost" target="_blank" rel="noopener noreferrer">לקריאת כל הביקורות</a>
     </div>
   </div>
 </section>
@@ -979,7 +1002,7 @@ textarea.field{min-height:132px;resize:vertical}
         <a
           id="contact-whatsapp-btn"
           class="btn btn-ghost contact-wa-btn"
-          href="https://wa.me/97246717547"
+          href="https://wa.me/972527335757"
           target="_blank"
           rel="noopener noreferrer"
         >שלח הודעה בווצאפ</a>
@@ -997,10 +1020,18 @@ textarea.field{min-height:132px;resize:vertical}
     <div class="footer-news">
       <h4>הצטרפו למועדון הלקוחות</h4>
       <p>וקבלו עדכונים והטבות בלעדיות</p>
-      <div class="news-row">
-        <input class="field" type="email" placeholder="אימייל">
-        <button class="btn btn-ghost btn-sm">הרשמה</button>
-      </div>
+      <form
+        id="newsletter-form"
+        class="news-row"
+        action="https://formsubmit.co/noamel1407@gmail.com"
+        method="POST"
+      >
+        <input type="hidden" name="_subject" value="הרשמה למועדון לקוחות - Shay Jewelry">
+        <input type="hidden" name="_captcha" value="false">
+        <input class="field" type="email" name="email" placeholder="אימייל" required autocomplete="email">
+        <button class="btn btn-ghost btn-sm" type="submit">הרשמה</button>
+      </form>
+      <p class="newsletter-form-status" id="newsletter-form-status" role="status" aria-live="polite"></p>
     </div>
 <div class="footer-brand">
       <a class="logo" href="#hero">
@@ -1025,11 +1056,11 @@ textarea.field{min-height:132px;resize:vertical}
         </li>
         <li>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>רחוב הגליל 7, טבריה</span>
+          <a href="https://www.google.com/maps/search/?api=1&query=רחוב+הגליל+7,+טבריה" target="_blank" rel="noopener noreferrer">רחוב הגליל 7, טבריה</a>
         </li>
         <li>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 11.5a8.4 8.4 0 0 1-8.4 8.4 8.3 8.3 0 0 1-4-1L3 20l1.2-5.4a8.3 8.3 0 0 1-1-4A8.4 8.4 0 0 1 11.6 2a8.4 8.4 0 0 1 9.4 9.5z"/></svg>
-          <a href="https://wa.me/97246717547" target="_blank" rel="noopener noreferrer">שלח הודעה בווצאפ</a>
+          <a href="https://wa.me/972527335757" target="_blank" rel="noopener noreferrer">שלח הודעה בווצאפ</a>
         </li>
       </ul>
     </div>
@@ -1043,6 +1074,7 @@ textarea.field{min-height:132px;resize:vertical}
       <a href="accessibility.html">הסדרי נגישות</a>
     </nav>
     <p class="footer-legal-copy">© Shay Jewellery. כל הזכויות שמורות.</p>
+    <p class="footer-legal-copy">אתר נבנה על ידי Netora Studio</p>
   </div>
 </footer>
 
@@ -1117,7 +1149,7 @@ textarea.field{min-height:132px;resize:vertical}
   });
 
   /* ---- contact form → Formspree ---- */
-  const WHATSAPP_NUMBER = '97246717547';
+  const WHATSAPP_NUMBER = '972527335757';
   const contactForm = document.getElementById('contact-form');
   const contactStatus = document.getElementById('contact-form-status');
   const whatsappBtn = document.getElementById('contact-whatsapp-btn');
@@ -1178,6 +1210,79 @@ textarea.field{min-height:132px;resize:vertical}
       }
     });
   }
+
+  /* ---- newsletter signup → FormSubmit ---- */
+  const newsletterForm = document.getElementById('newsletter-form');
+  const newsletterStatus = document.getElementById('newsletter-form-status');
+
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (newsletterForm.classList.contains('is-submitting')) return;
+
+      newsletterForm.classList.add('is-submitting');
+      if (newsletterStatus) {
+        newsletterStatus.textContent = 'שולח...';
+        newsletterStatus.classList.remove('is-error');
+      }
+
+      try {
+        const res = await fetch(newsletterForm.action, {
+          method: 'POST',
+          body: new FormData(newsletterForm),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (res.ok) {
+          newsletterForm.reset();
+          if (newsletterStatus) {
+            newsletterStatus.textContent = 'נרשמת בהצלחה! תודה שהצטרפת למועדון הלקוחות.';
+            newsletterStatus.classList.remove('is-error');
+          }
+        } else {
+          throw new Error('formsubmit error');
+        }
+      } catch {
+        if (newsletterStatus) {
+          newsletterStatus.textContent = 'לא הצלחנו לשלוח את ההרשמה. נסה/י שוב.';
+          newsletterStatus.classList.add('is-error');
+        }
+      } finally {
+        newsletterForm.classList.remove('is-submitting');
+      }
+    });
+  }
+
+  /* ---- review like hearts ---- */
+  const LIKES_KEY = 'shay-review-likes';
+  const likeButtons = document.querySelectorAll('.rev-like');
+
+  function loadLikes() {
+    try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; }
+    catch { return {}; }
+  }
+
+  function saveLikes(data) {
+    localStorage.setItem(LIKES_KEY, JSON.stringify(data));
+  }
+
+  const reviewLikes = loadLikes();
+
+  likeButtons.forEach((btn) => {
+    const id = btn.dataset.reviewId;
+    if (reviewLikes[id]) {
+      btn.classList.add('is-liked');
+      btn.setAttribute('aria-pressed', 'true');
+    }
+
+    btn.addEventListener('click', () => {
+      const liked = btn.classList.toggle('is-liked');
+      btn.setAttribute('aria-pressed', String(liked));
+      if (liked) reviewLikes[id] = true;
+      else delete reviewLikes[id];
+      saveLikes(reviewLikes);
+    });
+  });
 })();
 </script>
 
@@ -1233,10 +1338,11 @@ const CONFIG = {
            product shot instead of growing into a configurator close-up  */
   presets: [
     /* Mobile keeps comparable visual importance to desktop — larger fill/maxVh,
-       slightly closer camera, never a thumbnail-scale product shot. */
-    { id: 'mobile-s', maxW: 359,      fov: 28, dist: 5.15, fill: .92, maxVh: .38,  pad: 5,  turn: -0.30, tilt: 0.04, idle: 0.45 },
-    { id: 'mobile-m', maxW: 392,      fov: 27, dist: 5.25, fill: .90, maxVh: .40,  pad: 6,  turn: -0.32, tilt: 0.04, idle: 0.50 },
-    { id: 'mobile-l', maxW: 767,      fov: 26, dist: 5.40, fill: .86, maxVh: .36,  pad: 8,  turn: -0.34, tilt: 0.05, idle: 0.55 },
+       slightly closer camera, never a thumbnail-scale product shot.
+       Side-corridor sizing (≤768) also targets ~18–25% viewport width in resolveKeyframe. */
+    { id: 'mobile-s', maxW: 359,      fov: 26, dist: 4.55, fill: .94, maxVh: .42,  pad: 4,  turn: -0.30, tilt: 0.04, idle: 0.45 },
+    { id: 'mobile-m', maxW: 392,      fov: 25, dist: 4.65, fill: .92, maxVh: .44,  pad: 5,  turn: -0.32, tilt: 0.04, idle: 0.50 },
+    { id: 'mobile-l', maxW: 767,      fov: 24, dist: 4.85, fill: .90, maxVh: .40,  pad: 6,  turn: -0.34, tilt: 0.05, idle: 0.55 },
     { id: 'tablet',   maxW: 1023,     fov: 25, dist: 5.90, fill: .74, maxVh: .36,  pad: 16, turn: -0.36, tilt: 0.05, idle: 0.75 },
     { id: 'desktop',  maxW: Infinity, fov: 23, dist: 6.30, fill: .72, maxVh: .48,  pad: 26, turn: -0.38, tilt: 0.06, idle: 0.95 },
   ],
@@ -1330,25 +1436,26 @@ const DESKTOP_RING_PATH = [
 ];
 
 /* Mobile tells the same story with a recomposed path: center → edge →
-   opposite edge → foreground → lower edge. Coordinates favour the slim
-   corridor and keep the ring large enough to feel premium at 390px. */
+   opposite edge → foreground → lower edge. Side stops are authored larger
+   (~1.7–2× the previous corridor clamp) so at 375–430px the ring keeps
+   desktop-like presence (~18–25% viewport width) on the left gutter. */
 const MOBILE_RING_PATH = [
   { id: 'hero',       zone: 'hero',       pin: true, fill: 1.06, turn:  0.00, tilt:  0.00, roll:  0.010, dolly: 0.98, opacity: 1.00, env: 1.00, key: 1.00, ax:  0.00, ay:  0.02 },
   { id: 'heroLift',   zone: 'hero',       pin: true, fill: 0.98, turn: -0.10, tilt: -0.01, roll:  0.006, dolly: 1.00, opacity: 1.00, env: 1.04, key: 1.04, ax:  0.12, ay: -0.06 },
-  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.78, turn: -0.20, tilt: -0.02, roll:  0.000, dolly: 1.06, opacity: 0.94, env: 1.00, key: 1.00, ax:  0.42, ay: -0.22 },
-  /* corridor / edge — opposite lateral accents so it never sits on cards */
-  { id: 'catIn',      zone: 'categories',            fill: 0.52, turn: -0.14, tilt:  0.02, roll: -0.01, dolly: 1.16, opacity: 0.76, env: 0.96, key: 0.96, ax:  0.15, ay:  0.50 },
-  { id: 'categories', zone: 'categories',            fill: 0.56, turn:  0.10, tilt:  0.03, roll: -0.012,dolly: 1.14, opacity: 0.86, env: 1.00, key: 1.00, ax: -0.05, ay:  0.00 },
-  { id: 'catOut',     zone: 'categories',            fill: 0.48, turn:  0.22, tilt:  0.02, roll: -0.01, dolly: 1.18, opacity: 0.72, env: 0.96, key: 0.96, ax: -0.20, ay: -0.48 },
-  { id: 'featIn',     zone: 'featured',              fill: 0.54, turn:  0.12, tilt:  0.03, roll: -0.01, dolly: 1.08, opacity: 0.80, env: 1.02, key: 1.02, ax: -0.35, ay:  0.52 },
-  { id: 'feature',    zone: 'featured',              fill: 0.72, turn:  0.20, tilt:  0.05, roll: -0.018,dolly: 0.98, opacity: 1.00, env: 1.12, key: 1.08, ax:  0.05, ay:  0.00 },
-  { id: 'featOut',    zone: 'featured',              fill: 0.50, turn:  0.32, tilt:  0.02, roll: -0.01, dolly: 1.10, opacity: 0.76, env: 1.00, key: 1.00, ax:  0.40, ay: -0.50 },
-  { id: 'revIn',      zone: 'reviews',               fill: 0.48, turn:  0.24, tilt:  0.03, roll:  0.01, dolly: 1.18, opacity: 0.70, env: 0.96, key: 0.96, ax:  0.35, ay:  0.50 },
-  { id: 'reviews',    zone: 'reviews',               fill: 0.52, turn:  0.08, tilt:  0.04, roll:  0.012,dolly: 1.16, opacity: 0.82, env: 1.00, key: 1.00, ax: -0.30, ay:  0.00 },
-  { id: 'revOut',     zone: 'reviews',               fill: 0.46, turn: -0.08, tilt:  0.02, roll:  0.01, dolly: 1.20, opacity: 0.70, env: 0.96, key: 0.96, ax: -0.15, ay: -0.48 },
-  { id: 'detailIn',   zone: 'contact',               fill: 0.56, turn: -0.02, tilt:  0.04, roll:  0.01, dolly: 1.04, opacity: 0.84, env: 1.06, key: 1.06, ax:  0.30, ay:  0.48 },
-  { id: 'detail',     zone: 'contact',               fill: 0.78, turn: -0.16, tilt:  0.06, roll:  0.014,dolly: 0.92, opacity: 1.00, env: 1.16, key: 1.12, ax: -0.10, ay:  0.00 },
-  { id: 'finale',     zone: 'contact',               fill: 0.55, turn: -0.26, tilt:  0.03, roll:  0.01, dolly: 1.06, opacity: 0.00, env: 1.02, key: 1.02, ax:  0.00, ay: -0.42 },
+  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.78, turn: -0.20, tilt: -0.02, roll:  0.000, dolly: 1.04, opacity: 0.94, env: 1.00, key: 1.00, ax:  0.42, ay: -0.22 },
+  /* collections corridor — large, left-side presence; slight overflow OK */
+  { id: 'catIn',      zone: 'categories',            fill: 0.92, turn: -0.14, tilt:  0.02, roll: -0.01, dolly: 0.98, opacity: 0.82, env: 0.96, key: 0.96, ax:  0.20, ay:  0.50 },
+  { id: 'categories', zone: 'categories',            fill: 1.00, turn:  0.10, tilt:  0.03, roll: -0.012,dolly: 0.94, opacity: 0.92, env: 1.00, key: 1.00, ax: -0.08, ay:  0.00 },
+  { id: 'catOut',     zone: 'categories',            fill: 0.88, turn:  0.22, tilt:  0.02, roll: -0.01, dolly: 1.00, opacity: 0.78, env: 0.96, key: 0.96, ax: -0.22, ay: -0.48 },
+  { id: 'featIn',     zone: 'featured',              fill: 0.90, turn:  0.12, tilt:  0.03, roll: -0.01, dolly: 0.96, opacity: 0.84, env: 1.02, key: 1.02, ax: -0.30, ay:  0.52 },
+  { id: 'feature',    zone: 'featured',              fill: 1.05, turn:  0.20, tilt:  0.05, roll: -0.018,dolly: 0.90, opacity: 1.00, env: 1.12, key: 1.08, ax:  0.05, ay:  0.00 },
+  { id: 'featOut',    zone: 'featured',              fill: 0.86, turn:  0.32, tilt:  0.02, roll: -0.01, dolly: 0.98, opacity: 0.80, env: 1.00, key: 1.00, ax:  0.36, ay: -0.50 },
+  { id: 'revIn',      zone: 'reviews',               fill: 0.84, turn:  0.24, tilt:  0.03, roll:  0.01, dolly: 1.00, opacity: 0.74, env: 0.96, key: 0.96, ax:  0.32, ay:  0.50 },
+  { id: 'reviews',    zone: 'reviews',               fill: 0.92, turn:  0.08, tilt:  0.04, roll:  0.012,dolly: 0.98, opacity: 0.86, env: 1.00, key: 1.00, ax: -0.28, ay:  0.00 },
+  { id: 'revOut',     zone: 'reviews',               fill: 0.80, turn: -0.08, tilt:  0.02, roll:  0.01, dolly: 1.02, opacity: 0.74, env: 0.96, key: 0.96, ax: -0.15, ay: -0.48 },
+  { id: 'detailIn',   zone: 'contact',               fill: 0.90, turn: -0.02, tilt:  0.04, roll:  0.01, dolly: 0.96, opacity: 0.88, env: 1.06, key: 1.06, ax:  0.28, ay:  0.48 },
+  { id: 'detail',     zone: 'contact',               fill: 1.08, turn: -0.16, tilt:  0.06, roll:  0.014,dolly: 0.86, opacity: 1.00, env: 1.16, key: 1.12, ax: -0.10, ay:  0.00 },
+  { id: 'finale',     zone: 'contact',               fill: 0.88, turn: -0.26, tilt:  0.03, roll:  0.01, dolly: 0.98, opacity: 0.00, env: 1.02, key: 1.02, ax:  0.00, ay: -0.42 },
 ];
 
 /* ============================================================
@@ -1713,8 +1820,11 @@ function gutterOf(sectionSel) {
   let bandW = Math.max(left, right);
   let useRight = right >= left;
 
-  /* Collision-safe floor: keep a usable edge strip on 320–430px widths. */
-  const floorW = Math.max(48, Math.min(innerWidth * 0.16, 86));
+  /* Collision-safe floor: keep a usable edge strip on 320–430px widths.
+     On phones match ~20% viewport so the enlarged side ring has a real lane. */
+  const floorW = cssW <= 768 || innerWidth <= 768
+    ? Math.max(64, Math.min(innerWidth * 0.20, 96))
+    : Math.max(48, Math.min(innerWidth * 0.16, 86));
   if (bandW < floorW) {
     bandW = floorW;
     /* In RTL the content margin is on inline-end (physical left). Prefer that. */
@@ -1885,20 +1995,36 @@ function resolveKeyframe(k, out) {
   const availH = Math.max(24, r.h - pad * 2);
   const availW = Math.max(24, r.w - pad * 2);
   /* projected width changes as the ring turns — account for it explicitly */
-  const turnW = RING_BOX.w * Math.abs(Math.cos(k.turn)) + RING_BOX.d * Math.abs(Math.sin(k.turn));
-  let hpx = k.fill * availH * preset.fill;
-  hpx = Math.min(hpx, cssH * preset.maxVh);          // never dominate the viewport
-  if (hpx * turnW > availW) hpx = availW / turnW;
+  const turnW = Math.max(0.35, RING_BOX.w * Math.abs(Math.cos(k.turn)) + RING_BOX.d * Math.abs(Math.sin(k.turn)));
+  const mobileSide = cssW <= 768 && k.zone !== 'hero';
+  let hpx;
+  if (mobileSide) {
+    /* Desktop-like presence on phones: size the MODEL by viewport width
+       (~18–25%), not by the narrow gutter. A little edge overflow is
+       intentional; cards stay above the canvas (z-index) and never blocked. */
+    const baseW = cssW * 0.22;                       // mid of 18–25%
+    const fillMul = Math.max(0.72, Math.min(1.15, k.fill));
+    let ringW = baseW * fillMul;
+    ringW = Math.min(Math.max(ringW, cssW * 0.18), cssW * 0.26);
+    hpx = ringW / turnW;
+    hpx = Math.min(hpx, cssH * Math.max(preset.maxVh, 0.42));
+  } else {
+    hpx = k.fill * availH * preset.fill;
+    hpx = Math.min(hpx, cssH * preset.maxVh);        // never dominate the viewport
+    if (hpx * turnW > availW) hpx = availW / turnW;  // desktop/tablet: stay in gutter
+  }
   hpx /= 1.04;                                       // headroom for tilt + idle drift
   out.hpx = hpx;
   let x = r.x + r.w * 0.5 + (k.ax * availW * 0.5);
   let y = r.y + r.h * 0.5 + (k.ay * availH * 0.5);
   /* Soft collision clamp — keep the ring centre inside RING AREA so it
      cannot drift onto headings / cards / forms. Hero is authored against
-     a dedicated stage and is left unclamped. */
+     a dedicated stage and is left unclamped. On mobile side stops, use a
+     lighter half-width so most of the ring stays visible while a sliver
+     may leave the gutter for a 3D, editorial edge. */
   if (k.zone !== 'hero') {
     const halfH = hpx * 0.42;
-    const halfW = hpx * turnW * 0.42;
+    const halfW = hpx * turnW * (mobileSide ? 0.22 : 0.42);
     x = Math.min(r.x + r.w - halfW, Math.max(r.x + halfW, x));
     y = Math.min(r.y + r.h - halfH, Math.max(r.y + halfH, y));
   }
