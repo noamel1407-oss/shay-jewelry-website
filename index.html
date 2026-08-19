@@ -632,11 +632,25 @@ textarea.field{min-height:132px;resize:vertical}
 .contact>.wrap{position:relative;z-index:3}
 .footer{position:relative;z-index:3}
 
-/* Mobile: the ring rides above cards as a companion (pointer-events none,
-   so CTAs stay clickable). Footer stays above the canvas. Desktop unchanged. */
+/* Mobile: ring above section backgrounds, pointer-events none so every
+   control stays clickable. Footer bg stays under the canvas so the companion
+   can finish its fade there; interactive footer/contact controls sit above. */
 @media (max-width:768px){
   #ring-canvas{z-index:4}
-  .footer{z-index:6}
+  .footer{z-index:3}
+  .contact .field,
+  .contact .btn,
+  .contact-wa-btn,
+  .feat-body a,
+  .cat-body a,
+  .feat-more a,
+  .rev-more a,
+  .footer a,
+  .footer button,
+  .footer input,
+  .footer .logo{
+    position:relative;z-index:5;
+  }
 }
 
 /* ============ FOCUS ============ */
@@ -1347,9 +1361,9 @@ const CONFIG = {
     /* Mobile keeps comparable visual importance to desktop — larger fill/maxVh,
        slightly closer camera, never a thumbnail-scale product shot.
        Side-corridor sizing (≤768) also targets ~18–25% viewport width in resolveKeyframe. */
-    { id: 'mobile-s', maxW: 359,      fov: 24, dist: 3.85, fill: .96, maxVh: .52,  pad: 4,  turn: -0.30, tilt: 0.05, idle: 0.70 },
-    { id: 'mobile-m', maxW: 392,      fov: 23, dist: 3.95, fill: .95, maxVh: .54,  pad: 5,  turn: -0.32, tilt: 0.05, idle: 0.75 },
-    { id: 'mobile-l', maxW: 767,      fov: 22, dist: 4.15, fill: .93, maxVh: .50,  pad: 6,  turn: -0.34, tilt: 0.06, idle: 0.80 },
+    { id: 'mobile-s', maxW: 359,      fov: 22, dist: 3.35, fill: .96, maxVh: .58,  pad: 4,  turn: -0.30, tilt: 0.05, idle: 0.70 },
+    { id: 'mobile-m', maxW: 392,      fov: 21, dist: 3.45, fill: .95, maxVh: .60,  pad: 5,  turn: -0.32, tilt: 0.05, idle: 0.75 },
+    { id: 'mobile-l', maxW: 767,      fov: 21, dist: 3.65, fill: .93, maxVh: .56,  pad: 6,  turn: -0.34, tilt: 0.06, idle: 0.80 },
     { id: 'tablet',   maxW: 1023,     fov: 25, dist: 5.90, fill: .74, maxVh: .36,  pad: 16, turn: -0.36, tilt: 0.05, idle: 0.75 },
     { id: 'desktop',  maxW: Infinity, fov: 23, dist: 6.30, fill: .72, maxVh: .48,  pad: 26, turn: -0.38, tilt: 0.06, idle: 0.95 },
   ],
@@ -1447,22 +1461,26 @@ const DESKTOP_RING_PATH = [
    mid-section, keep ≥55% visible, fade only at the finale. ax/ay are
    authored in viewport space by resolveKeyframe (not copied from desktop). */
 const MOBILE_RING_PATH = [
-  { id: 'hero',       zone: 'hero',       pin: true, fill: 1.06, turn:  0.00, tilt:  0.00, roll:  0.010, dolly: 0.96, opacity: 1.00, env: 1.08, key: 1.08, ax:  0.00, ay:  0.02 },
-  { id: 'heroLift',   zone: 'hero',       pin: true, fill: 0.98, turn: -0.16, tilt: -0.02, roll:  0.008, dolly: 0.98, opacity: 1.00, env: 1.10, key: 1.10, ax:  0.10, ay: -0.08 },
-  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.86, turn: -0.32, tilt: -0.03, roll:  0.000, dolly: 1.02, opacity: 0.78, env: 1.04, key: 1.04, ax:  0.55, ay: -0.28 },
-  /* collections: off-left → inward peak → continue, never a tiny sliver */
-  { id: 'catIn',      zone: 'categories',            fill: 0.92, turn: -0.42, tilt:  0.06, roll: -0.04, dolly: 0.90, opacity: 0.88, env: 1.12, key: 1.16, ax: -1.00, ay:  0.62 },
-  { id: 'categories', zone: 'categories',            fill: 1.10, turn:  0.18, tilt:  0.10, roll: -0.02, dolly: 0.80, opacity: 1.00, env: 1.22, key: 1.24, ax:  0.15, ay:  0.00 },
-  { id: 'catOut',     zone: 'categories',            fill: 0.96, turn:  0.48, tilt:  0.05, roll:  0.03, dolly: 0.88, opacity: 0.90, env: 1.14, key: 1.14, ax: -0.55, ay: -0.58 },
-  { id: 'featIn',     zone: 'featured',              fill: 0.94, turn:  0.22, tilt:  0.08, roll: -0.03, dolly: 0.86, opacity: 0.92, env: 1.18, key: 1.18, ax: -0.85, ay:  0.55 },
-  { id: 'feature',    zone: 'featured',              fill: 1.12, turn:  0.55, tilt:  0.12, roll: -0.04, dolly: 0.78, opacity: 1.00, env: 1.28, key: 1.26, ax:  0.35, ay:  0.04 },
-  { id: 'featOut',    zone: 'featured',              fill: 0.94, turn:  0.78, tilt:  0.04, roll:  0.02, dolly: 0.90, opacity: 0.88, env: 1.14, key: 1.12, ax: -0.40, ay: -0.52 },
-  { id: 'revIn',      zone: 'reviews',               fill: 0.90, turn:  0.40, tilt:  0.08, roll:  0.03, dolly: 0.90, opacity: 0.86, env: 1.12, key: 1.14, ax:  0.70, ay:  0.50 },
-  { id: 'reviews',    zone: 'reviews',               fill: 0.98, turn:  0.08, tilt:  0.10, roll:  0.04, dolly: 0.86, opacity: 0.94, env: 1.16, key: 1.18, ax: -0.25, ay:  0.02 },
-  { id: 'revOut',     zone: 'reviews',               fill: 0.90, turn: -0.28, tilt:  0.04, roll:  0.02, dolly: 0.92, opacity: 0.86, env: 1.10, key: 1.10, ax: -0.80, ay: -0.50 },
-  { id: 'detailIn',   zone: 'contact',               fill: 0.94, turn: -0.10, tilt:  0.08, roll:  0.02, dolly: 0.86, opacity: 0.90, env: 1.16, key: 1.18, ax:  0.45, ay:  0.48 },
-  { id: 'detail',     zone: 'contact',               fill: 1.08, turn: -0.38, tilt:  0.12, roll:  0.03, dolly: 0.80, opacity: 1.00, env: 1.24, key: 1.22, ax:  0.05, ay:  0.00 },
-  { id: 'finale',     zone: 'contact',               fill: 0.88, turn: -0.55, tilt:  0.04, roll:  0.01, dolly: 0.96, opacity: 0.00, env: 1.08, key: 1.08, ax: -0.70, ay: -0.42 },
+  { id: 'hero',       zone: 'hero',       pin: true, fill: 1.06, turn:  0.00, tilt:  0.00, roll:  0.010, dolly: 0.94, opacity: 1.00, env: 1.08, key: 1.08, ax:  0.00, ay:  0.02 },
+  { id: 'heroLift',   zone: 'hero',       pin: true, fill: 0.98, turn: -0.16, tilt: -0.02, roll:  0.008, dolly: 0.96, opacity: 1.00, env: 1.10, key: 1.10, ax:  0.10, ay: -0.08 },
+  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.88, turn: -0.32, tilt: -0.03, roll:  0.000, dolly: 1.00, opacity: 0.82, env: 1.04, key: 1.04, ax:  0.55, ay: -0.28 },
+  { id: 'catIn',      zone: 'categories',            fill: 0.94, turn: -0.42, tilt:  0.06, roll: -0.04, dolly: 0.88, opacity: 0.92, env: 1.14, key: 1.16, ax: -1.00, ay:  0.58 },
+  { id: 'categories', zone: 'categories',            fill: 1.12, turn:  0.16, tilt:  0.10, roll: -0.02, dolly: 0.76, opacity: 1.00, env: 1.24, key: 1.26, ax:  0.20, ay:  0.00 },
+  { id: 'catOut',     zone: 'categories',            fill: 0.96, turn:  0.42, tilt:  0.05, roll:  0.03, dolly: 0.86, opacity: 0.94, env: 1.14, key: 1.14, ax: -0.70, ay: -0.52 },
+  { id: 'featIn',     zone: 'featured',              fill: 0.90, turn:  0.28, tilt:  0.07, roll: -0.03, dolly: 0.88, opacity: 0.92, env: 1.16, key: 1.16, ax: -0.95, ay:  0.50 },
+  { id: 'feature',    zone: 'featured',              fill: 0.88, turn:  0.52, tilt:  0.10, roll: -0.03, dolly: 0.90, opacity: 0.95, env: 1.20, key: 1.18, ax: -0.85, ay:  0.02 },
+  { id: 'featOut',    zone: 'featured',              fill: 0.90, turn:  0.70, tilt:  0.04, roll:  0.02, dolly: 0.88, opacity: 0.92, env: 1.12, key: 1.12, ax: -0.50, ay: -0.48 },
+  { id: 'revIn',      zone: 'reviews',               fill: 0.90, turn:  0.40, tilt:  0.08, roll:  0.03, dolly: 0.88, opacity: 0.90, env: 1.12, key: 1.14, ax: -0.80, ay:  0.48 },
+  { id: 'reviews',    zone: 'reviews',               fill: 0.94, turn:  0.10, tilt:  0.10, roll:  0.04, dolly: 0.84, opacity: 0.94, env: 1.16, key: 1.18, ax: -0.35, ay:  0.02 },
+  { id: 'revOut',     zone: 'reviews',               fill: 0.90, turn: -0.22, tilt:  0.04, roll:  0.02, dolly: 0.90, opacity: 0.90, env: 1.10, key: 1.10, ax: -0.90, ay: -0.46 },
+  { id: 'ctaIn',      zone: 'contact',               fill: 0.86, turn: -0.08, tilt:  0.06, roll:  0.02, dolly: 0.92, opacity: 0.90, env: 1.14, key: 1.16, ax: -1.05, ay:  0.42 },
+  { id: 'cta',        zone: 'contact',               fill: 0.86, turn: -0.22, tilt:  0.08, roll:  0.02, dolly: 0.92, opacity: 0.92, env: 1.16, key: 1.16, ax: -1.10, ay:  0.08 },
+  { id: 'brand',      zone: 'visual',                fill: 1.04, turn: -0.58, tilt:  0.14, roll:  0.05, dolly: 0.78, opacity: 0.96, env: 1.22, key: 1.20, ax: -0.90, ay:  0.00 },
+  { id: 'newsIn',     zone: 'footer',                fill: 0.86, turn: -0.30, tilt:  0.06, roll:  0.02, dolly: 0.94, opacity: 0.88, env: 1.12, key: 1.12, ax: -1.15, ay:  0.42 },
+  { id: 'news',       zone: 'footer',                fill: 0.86, turn: -0.18, tilt:  0.05, roll:  0.01, dolly: 0.96, opacity: 0.88, env: 1.10, key: 1.10, ax: -1.20, ay:  0.18 },
+  { id: 'footIn',     zone: 'footer',                fill: 0.90, turn: -0.36, tilt:  0.08, roll:  0.02, dolly: 0.92, opacity: 0.86, env: 1.12, key: 1.12, ax: -0.55, ay: -0.05 },
+  { id: 'footer',     zone: 'footer',                fill: 0.84, turn: -0.48, tilt:  0.06, roll:  0.02, dolly: 0.98, opacity: 0.72, env: 1.08, key: 1.08, ax: -1.05, ay: -0.22 },
+  { id: 'finale',     zone: 'footer',                fill: 0.78, turn: -0.62, tilt:  0.03, roll:  0.01, dolly: 1.04, opacity: 0.00, env: 1.04, key: 1.04, ax: -1.25, ay: -0.38 },
 ];
 
 /* ============================================================
@@ -1855,9 +1873,34 @@ function measureZones() {
     ['featured', '#featured'],
     ['reviews', '#reviews'],
     ['contact', '#contact'],
+    ['footer', '.footer'],
   ]) {
     const g = gutterOf(sel);
     if (g && g.w >= MIN_ZONE.w && g.h >= MIN_ZONE.h) docRects[name] = g;
+  }
+  const vis = document.querySelector('.contact-visual');
+  if (vis) {
+    const r = rectOf(vis);
+    docRects.visual = {
+      top: r.top,
+      left: r.left,
+      w: Math.max(MIN_ZONE.w, Math.min(innerWidth * 0.2, 96)),
+      h: Math.max(r.h, MIN_ZONE.h),
+    };
+  } else if (docRects.contact) {
+    docRects.visual = docRects.contact;
+  }
+  if (!docRects.footer) {
+    const foot = document.querySelector('.footer');
+    if (foot) {
+      const r = rectOf(foot);
+      docRects.footer = {
+        top: r.top,
+        left: r.left,
+        w: Math.max(MIN_ZONE.w, Math.min(innerWidth * 0.2, 96)),
+        h: Math.max(r.h, MIN_ZONE.h),
+      };
+    }
   }
 }
 
@@ -1916,6 +1959,10 @@ function buildTimeline() {
   const featured = document.getElementById('featured');
   const reviews = document.getElementById('reviews');
   const contact = document.getElementById('contact');
+  const contactVisual = document.querySelector('.contact-visual');
+  const footerEl = document.querySelector('.footer');
+  const footerNews = document.querySelector('.footer-news');
+  const mobilePath = innerWidth < 768;
 
   /* Hero exit is timed in viewport-heights so it always breathes across a
      full screen of scroll. Mid-page stops lock to section centres so the
@@ -1936,7 +1983,16 @@ function buildTimeline() {
     revOut: reviews ? progressAtCentre(reviews, 0.40) : 0.74,
     detailIn: contact ? progressAtCentre(contact, -0.38) : 0.80,
     detail: contact ? progressAtCentre(contact, 0.0) : 0.88,
-    finale: contact ? progressAtCentre(contact, 0.48) : 0.96,
+    ctaIn: contact ? progressAtCentre(contact, -0.42) : 0.78,
+    cta: contact ? progressAtCentre(contact, -0.10) : 0.84,
+    brand: contactVisual ? progressAtCentre(contactVisual, 0.0) : (contact ? progressAtCentre(contact, 0.28) : 0.88),
+    newsIn: footerNews ? progressAtCentre(footerNews, -0.32) : (footerEl ? progressAtCentre(footerEl, -0.36) : 0.90),
+    news: footerNews ? progressAtCentre(footerNews, 0.0) : (footerEl ? progressAtCentre(footerEl, -0.10) : 0.92),
+    footIn: footerEl ? progressAtCentre(footerEl, 0.14) : 0.94,
+    footer: footerEl ? progressAtCentre(footerEl, 0.34) : 0.96,
+    finale: mobilePath
+      ? (footerEl ? progressAtCentre(footerEl, 0.55) : 0.99)
+      : (contact ? progressAtCentre(contact, 0.48) : 0.96),
   };
 
   /* A pinned zone is frozen at the scroll offset where its own sequence
@@ -1975,12 +2031,10 @@ function buildTimeline() {
   kf.sort((a, b) => a.p - b.p);
   /* keep keyframes strictly increasing so interpolation can never divide by 0 */
   for (let i = 1; i < kf.length; i++) kf[i].p = Math.max(kf[i].p, kf[i - 1].p + 0.004);
-  /* make sure the ring is gone by the time the footer arrives */
-  if (kf.length) {
+  /* fade out only if the authored path does not already end at opacity 0 */
+  if (kf.length && kf[kf.length - 1].opacity > 0.002) {
     const last = kf[kf.length - 1];
-    if (last.opacity > 0 || last.p < 0.999) {
-      kf.push({ ...last, id: 'gone', p: Math.min(1, Math.max(last.p + 0.02, 0.985)), opacity: 0 });
-    }
+    kf.push({ ...last, id: 'gone', p: Math.min(1, last.p + 0.02), opacity: 0 });
   }
   keyframes = kf;
   /* the idle drift lives only inside the first (hero) segment */
@@ -2006,13 +2060,13 @@ function resolveKeyframe(k, out) {
   const mobileSide = cssW <= 768 && k.zone !== 'hero';
   let hpx;
   if (mobileSide) {
-    /* Size the MODEL by viewport width (22–30%), not the gutter.
-       Peak fill ≈ 27–30vw; entrance/exit stay ≥ 22vw. */
+    /* Size the MODEL by viewport width (28–38%), not the gutter.
+       Peak fill ≈ 35–38vw (~130–160px on iPhone); dense UI stays ≥ 28vw. */
     const fillMul = Math.max(0.82, Math.min(1.12, k.fill));
-    let ringW = cssW * 0.268 * fillMul;
-    ringW = Math.min(Math.max(ringW, cssW * 0.22), cssW * 0.30);
+    let ringW = cssW * 0.35 * fillMul;
+    ringW = Math.min(Math.max(ringW, cssW * 0.28), cssW * 0.38);
     hpx = ringW / turnW;
-    hpx = Math.min(hpx, cssH * Math.max(preset.maxVh, 0.52));
+    hpx = Math.min(hpx, cssH * Math.max(preset.maxVh, 0.58));
   } else {
     hpx = k.fill * availH * preset.fill;
     hpx = Math.min(hpx, cssH * preset.maxVh);
@@ -2023,12 +2077,12 @@ function resolveKeyframe(k, out) {
   let x = r.x + r.w * 0.5 + (k.ax * availW * 0.5);
   let y = r.y + r.h * 0.5 + (k.ay * availH * 0.5);
   if (mobileSide) {
-    /* Left-side companion in viewport space. ax -1 = peek off the left,
-       ax 0 = peak lane (~16% from left), ax +1 = slightly inward. */
+    /* Left-side companion. ax -1 = 10–30% off the left edge,
+       ax 0 = main lane, ax +1 = a step inward. Always keep ≥65% visible. */
     const ringW = hpx * turnW;
-    const peakX = cssW * 0.16;
+    const peakX = cssW * 0.17;
     x = peakX + k.ax * cssW * 0.10;
-    const minVisible = 0.58;
+    const minVisible = 0.70;
     const minX = ringW * (minVisible - 0.5);
     const maxX = cssW * 0.34;
     x = Math.min(maxX, Math.max(minX, x));
