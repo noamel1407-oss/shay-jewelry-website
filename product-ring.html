@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>צפייה בפריט | SHAY JEWELRY</title>
+<meta name="description" content="טבעת סוליטר יהלום תלת־ממדית — SHAY JEWELRY">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="collection.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/build/three.module.min.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<header class="col-nav">
+  <a class="col-back" href="index.html#featured">‹ חזרה לקולקציות נבחרות</a>
+  <a class="logo" href="index.html" aria-label="SHAY JEWELRY">
+    <span class="l1">SHAY</span>
+    <span class="l2">JEWELRY</span>
+  </a>
+  <ul class="col-nav-links">
+    <li><a href="rings.html">טבעות</a></li>
+    <li><a href="earrings.html">עגילים</a></li>
+    <li><a href="necklaces.html">שרשראות</a></li>
+    <li><a href="bracelets.html">צמידים</a></li>
+  </ul>
+</header>
+
+<section class="col-hero">
+  <h1 id="product-title">טבעת סוליטר</h1>
+  <p>סובבו עם העכבר לצפייה מכל זווית.</p>
+  <div class="col-line" aria-hidden="true"></div>
+</section>
+
+<main class="col-stage-wrap">
+  <div class="col-stage">
+    <div class="col-stage__glow" aria-hidden="true"></div>
+    <div class="col-stage__loading" id="ring-loading" aria-live="polite">
+      <span>טוען את הטבעת…</span>
+      <div class="col-stage__loading-bar" aria-hidden="true"><i id="ring-loading-bar"></i></div>
+    </div>
+    <canvas id="ring-canvas" class="col-stage__canvas" aria-label="טבעת סוליטר יהלום תלת־ממדית"></canvas>
+    <p class="col-stage__hint">גררו עם העכבר · השתמשו בגלגלת להתקרבות</p>
+  </div>
+</main>
+
+<footer class="col-footer">
+  <a href="index.html#contact">צור קשר</a>
+  <span>·</span>
+  <a href="https://wa.me/97246717547" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  <p style="margin-top:14px">© Shay Jewellery</p>
+</footer>
+
+<script type="module">
+import { mountRingViewer } from './ring-viewer.js';
+
+const titles = {
+  '1': 'טבעת סוליטר יהלום',
+  '2': 'טבעת איטרניטי יהלומים',
+  '3': 'סט טבעות יהלומים',
+  '4': 'טבעת איטרניטי',
+};
+const id = new URLSearchParams(location.search).get('item') || '1';
+const titleEl = document.getElementById('product-title');
+if (titleEl && titles[id]) titleEl.textContent = titles[id];
+document.title = (titles[id] || 'צפייה בפריט') + ' | SHAY JEWELRY';
+
+mountRingViewer(document.getElementById('ring-canvas'), {
+  src: 'models/solitaire-ring.glb',
+  loadingEl: document.getElementById('ring-loading'),
+  barEl: document.getElementById('ring-loading-bar'),
+});
+</script>
+</body>
+</html>

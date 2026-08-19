@@ -1,0 +1,71 @@
+:root{
+  --bg:#0f0f0f;
+  --gold:#C9A36A;
+  --gold-2:#E2C28E;
+  --cream:#f1ede6;
+  --text-2:#d2d2d2;
+  --text-muted:rgba(210,210,210,.62);
+  --border-gold:rgba(201,163,106,.18);
+  --serif:'Frank Ruhl Libre', serif;
+  --latin-serif:'Cormorant Garamond', 'Frank Ruhl Libre', serif;
+  --sans:'Heebo', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--cream);
+  font-family:var(--sans);
+  font-weight:300;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+.legal-page{
+  max-width:920px;
+  margin:0 auto;
+  padding:clamp(56px,8vw,96px) clamp(20px,5vw,40px);
+  text-align:right;
+}
+.legal-back{
+  display:inline-block;
+  margin-bottom:40px;
+  font-size:14px;
+  color:var(--text-muted);
+  transition:color .3s ease;
+}
+.legal-back:hover{color:var(--gold-2)}
+.legal-header{
+  padding-bottom:40px;
+  margin-bottom:48px;
+  border-bottom:1px solid var(--border-gold);
+}
+.legal-brand{
+  font-family:var(--latin-serif);
+  font-size:clamp(24px,4vw,32px);
+  letter-spacing:.12em;
+  color:var(--gold);
+}
+.legal-title{
+  margin-top:16px;
+  font-family:var(--serif);
+  font-size:clamp(28px,5vw,38px);
+  font-weight:500;
+  color:var(--cream);
+  line-height:1.25;
+}
+.legal-sections{display:flex;flex-direction:column;gap:48px}
+.legal-section h2{
+  font-family:var(--serif);
+  font-size:clamp(20px,3vw,26px);
+  font-weight:500;
+  color:var(--cream);
+  margin-bottom:20px;
+}
+.legal-section p{
+  font-size:16px;
+  line-height:1.85;
+  color:var(--text-muted);
+  margin-bottom:16px;
+}
+.legal-section p:last-child{margin-bottom:0}

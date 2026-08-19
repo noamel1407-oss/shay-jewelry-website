@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="images/ring-poster.webp" type="image/webp" fetchpriority="high">
 
 <style>
 /* ============================================================
@@ -33,10 +34,13 @@
   --serif:'Frank Ruhl Libre', serif;
   --latin-serif:'Cormorant Garamond', 'Frank Ruhl Libre', serif;
   --sans:'Heebo', sans-serif;
+  --nav-h:62px;
 }
+@media (min-width:768px){:root{--nav-h:76px}}
 
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 10px)}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
 body{
   background:var(--bg);
   color:var(--white);
@@ -63,13 +67,19 @@ a{color:inherit;text-decoration:none}
 .nav{
   position:fixed;inset-inline:0;top:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 clamp(24px,5vw,72px);height:76px;
-  background:rgba(15,15,15,.78);
-  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);
-  border-bottom:1px solid var(--border-gold-soft);
-  transition:height .5s var(--ease-lux),background .5s var(--ease-lux),border-color .5s;
+  padding:0 max(clamp(18px,5vw,72px), env(safe-area-inset-left,0px), env(safe-area-inset-right,0px));
+  padding-top:env(safe-area-inset-top,0px);
+  height:calc(var(--nav-h) + env(safe-area-inset-top,0px));
+  /* transparent over the hero; the bar only materialises once you scroll */
+  background:rgba(15,15,15,0);
+  border-bottom:1px solid transparent;
+  transition:background .5s var(--ease-lux),border-color .5s var(--ease-lux),backdrop-filter .5s;
 }
-.nav.scrolled{height:64px;background:rgba(15,15,15,.96);border-bottom-color:var(--border-gold)}
+.nav.scrolled{
+  background:rgba(12,11,10,.9);
+  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);
+  border-bottom-color:var(--border-gold);
+}
 .nav-links{display:flex;gap:clamp(18px,3vw,44px);list-style:none}
 .nav-links a{
   font-size:14px;font-weight:400;letter-spacing:.06em;color:var(--text-2);
@@ -84,79 +94,281 @@ a{color:inherit;text-decoration:none}
 .logo{display:flex;flex-direction:column;align-items:center;line-height:1}
 .logo .l1{font-family:var(--latin-serif);font-size:26px;letter-spacing:.42em;color:var(--gold-2);text-indent:.42em}
 .logo .l2{font-family:var(--latin-serif);font-size:9px;letter-spacing:.58em;color:var(--gold);margin-top:5px;text-indent:.58em}
-.nav-burger{display:none;background:none;border:none;color:var(--gold-2);font-size:24px;cursor:pointer}
+/* refined menu button: three hairlines, morphs to a cross when open */
+.nav-burger{
+  display:none;position:relative;
+  width:42px;height:42px;margin-inline-end:-9px;
+  background:none;border:0;cursor:pointer;color:var(--gold-2);
+}
+.nav-burger span{
+  position:absolute;left:50%;width:22px;height:1px;
+  background:currentColor;
+  transform-origin:center;
+  transition:transform .5s var(--ease-cine),opacity .3s var(--ease-cine),width .5s var(--ease-cine),top .5s var(--ease-cine);
+}
+.nav-burger span:nth-child(1){top:15px;transform:translateX(-50%)}
+.nav-burger span:nth-child(2){top:21px;width:16px;transform:translateX(-50%)}
+.nav-burger span:nth-child(3){top:27px;width:22px;transform:translateX(-50%)}
+.nav-burger[aria-expanded="true"] span:nth-child(1){top:21px;transform:translateX(-50%) rotate(45deg)}
+.nav-burger[aria-expanded="true"] span:nth-child(2){opacity:0;width:0}
+.nav-burger[aria-expanded="true"] span:nth-child(3){top:21px;width:22px;transform:translateX(-50%) rotate(-45deg)}
 
-/* ============ HERO ============ */
+/* full-screen mobile menu built from the existing nav links */
+.nav-panel{
+  position:fixed;inset:0;z-index:99;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(18px,4.4svh,34px);
+  padding:calc(var(--nav-h) + env(safe-area-inset-top,0px)) 24px calc(28px + env(safe-area-inset-bottom,0px));
+  background:rgba(8,7,6,.97);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  opacity:0;visibility:hidden;
+  transition:opacity .5s var(--ease-cine),visibility .5s;
+}
+.nav-panel.open{opacity:1;visibility:visible}
+.nav-panel a{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(20px,6vw,26px);letter-spacing:.05em;
+  color:#ece3d4;
+  opacity:0;transform:translateY(14px);
+  transition:opacity .6s var(--ease-lux),transform .6s var(--ease-lux),color .35s;
+}
+.nav-panel.open a{opacity:1;transform:none}
+.nav-panel.open a:nth-child(1){transition-delay:.08s}
+.nav-panel.open a:nth-child(2){transition-delay:.14s}
+.nav-panel.open a:nth-child(4){transition-delay:.20s}
+.nav-panel.open a:nth-child(5){transition-delay:.26s}
+.nav-panel.open a:nth-child(6){transition-delay:.32s}
+.nav-panel a:hover,.nav-panel a:focus-visible{color:var(--gold-2)}
+.nav-panel .nav-panel__rule{
+  width:min(52%,220px);height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,163,106,.55),transparent);
+}
+body.menu-open{overflow:hidden}
+
+/* ============================================================
+   HERO — mobile-first cinematic stage
+   Rows: [intro] [ring stage — absorbs slack] [foot]
+   The middle row is a real, measured element; the WebGL ring is
+   fitted into it, so the ring can never land on top of copy.
+   ============================================================ */
 .hero{
-  position:relative;min-height:100vh;
-  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
-  direction:ltr;
-  align-items:center;overflow:hidden;
+  position:relative;
+  isolation:isolate;
+  min-height:100vh;
+  min-height:100svh;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  justify-items:center;
+  align-content:stretch;
+  row-gap:clamp(8px,1.8svh,22px);
+  padding-block:
+    calc(var(--nav-h) + clamp(14px,5.4svh,58px) + env(safe-area-inset-top,0px))
+    calc(clamp(12px,2.4svh,30px) + env(safe-area-inset-bottom,0px));
+  padding-inline:
+    max(clamp(18px,5.5vw,44px), env(safe-area-inset-right,0px))
+    max(clamp(18px,5.5vw,44px), env(safe-area-inset-left,0px));
+  overflow:hidden;
+  background:#070605;
+  text-align:center;
+}
+
+/* ---- background: dark room + one diagonal light shaft + a pool of light ---- */
+.hero-bg{
+  position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
   background:
-    radial-gradient(1400px 820px at 88% 28%, rgba(201,163,106,.12), transparent 58%),
-    radial-gradient(1000px 680px at 8% 82%, rgba(201,163,106,.06), transparent 62%),
-    linear-gradient(185deg,#141414 0%, #0f0f0f 52%, #0a0a0a 100%);
+    radial-gradient(120% 78% at 68% -2%, rgba(110,72,38,.48) 0%, rgba(52,34,20,.18) 42%, transparent 70%),
+    radial-gradient(90% 54% at 50% 98%,  rgba(24,17,11,.95) 0%, transparent 72%),
+    linear-gradient(180deg,#0a0806 0%, #0d0a08 48%, #060504 100%);
 }
-.hero::before{
-  content:'';position:absolute;inset:0;opacity:.18;pointer-events:none;
-  background:
-    radial-gradient(2px 360px at 18% 58%, rgba(255,255,255,.06), transparent),
-    radial-gradient(2px 520px at 66% 28%, rgba(226,194,142,.07), transparent),
-    radial-gradient(1.5px 320px at 84% 72%, rgba(255,255,255,.05), transparent);
-  transform:rotate(-18deg) scale(1.4);
+/* one soft shaft entering from the upper right; the gradient dies well
+   inside the box on every side, so no edge of the element is ever visible */
+.hero-bg__shaft{
+  position:absolute;inset:0;
+  background:linear-gradient(204deg,
+    rgba(255,236,208,.175) 0%,
+    rgba(255,226,186,.095) 14%,
+    rgba(248,214,168,.045) 28%,
+    rgba(238,202,158,.016) 42%,
+    transparent 56%);
+  -webkit-mask-image:linear-gradient(114deg,
+    transparent 0%, rgba(0,0,0,.32) 12%, #000 38%, #000 56%, rgba(0,0,0,.28) 78%, transparent 96%);
+          mask-image:linear-gradient(114deg,
+    transparent 0%, rgba(0,0,0,.32) 12%, #000 38%, #000 56%, rgba(0,0,0,.28) 78%, transparent 96%);
 }
-.hero::after{
-  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
-  background:
-    radial-gradient(ellipse 90% 70% at 18% 50%, rgba(15,15,15,.72) 0%, transparent 68%),
-    linear-gradient(90deg,#0f0f0f 0%,rgba(15,15,15,.52) 22%,transparent 48%),
-    linear-gradient(0deg,#0f0f0f 0%,transparent 18%),
-    linear-gradient(180deg,transparent 72%,rgba(10,10,10,.55) 100%);
+.hero-bg__pool{
+  position:absolute;left:50%;top:58%;
+  width:min(96vw,680px);aspect-ratio:1/.46;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse at center,
+    rgba(214,172,116,.20) 0%, rgba(190,148,96,.08) 40%, transparent 74%);
 }
-.hero-copy{
-  padding:140px clamp(24px,6vw,90px) 90px;
-  position:relative;z-index:3;
-  direction:rtl;text-align:right;
+/* very low-amplitude grain: kills gradient banding on 8-bit dark screens */
+.hero-bg__grain{
+  position:absolute;inset:-10%;opacity:.034;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");
+  background-size:140px 140px;
 }
-.hero-logo{text-align:center;max-width:max-content}
-.hero-logo .l2{justify-content:center}
-.hero-logo{margin-bottom:38px}
-.hero-logo .l1{
+
+/* ---- intro block ---- */
+.hero-intro{position:relative;z-index:3;width:100%;max-width:min(100%,760px)}
+.hero-title{margin:0;font-weight:400}
+.hero-title__mark{
+  display:block;
+  direction:ltr;unicode-bidi:isolate;
   font-family:var(--latin-serif);font-weight:500;
-  font-size:clamp(56px,7.5vw,104px);letter-spacing:.3em;text-indent:.3em;
-  color:var(--gold-2);
-  text-shadow:0 2px 40px rgba(0,0,0,.45), 0 0 80px rgba(201,163,106,.28);
+  font-size:clamp(42px,17vw,104px);
+  line-height:.94;
+  letter-spacing:.32em;
+  /* re-centre: letter-spacing adds a trailing gap after the last glyph */
+  text-indent:.32em;
+  color:#f3ead9;
+  text-shadow:0 1px 30px rgba(0,0,0,.6), 0 0 72px rgba(201,163,106,.16);
 }
-.hero-logo .l2{
-  display:flex;align-items:center;gap:16px;margin-top:10px;
-  font-family:var(--latin-serif);font-size:clamp(14px,1.6vw,20px);
-  letter-spacing:.66em;text-indent:.1em;color:var(--gold);
+.hero-rule{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(9px,2.6vw,15px);
+  margin:clamp(12px,2.1svh,20px) auto clamp(11px,1.9svh,18px);
+  width:min(74%,340px);
 }
-.hero-logo .l2::before,.hero-logo .l2::after{
-  content:'';height:1px;flex:0 0 clamp(30px,4vw,58px);background:linear-gradient(90deg,transparent,var(--gold))
+.hero-rule::before,.hero-rule::after{
+  content:'';height:1px;flex:1 1 auto;
 }
-.hero-logo .l2::after{background:linear-gradient(90deg,var(--gold),transparent)}
-.hero-sub{
-  font-family:var(--serif);font-weight:300;
-  font-size:clamp(18px,2vw,24px);line-height:1.85;color:#e8e2d8;
-  max-width:30ch;margin-bottom:48px;
-  text-shadow:0 2px 24px rgba(0,0,0,.55), 0 1px 0 rgba(0,0,0,.2);
+.hero-rule::before{background:linear-gradient(90deg,transparent,rgba(201,163,106,.62))}
+.hero-rule::after{background:linear-gradient(90deg,rgba(201,163,106,.62),transparent)}
+.hero-rule i{
+  flex:0 0 auto;width:6px;height:6px;transform:rotate(45deg);
+  border:1px solid rgba(201,163,106,.9);
 }
-.hero-cta{display:flex;gap:18px;flex-wrap:wrap}
-.hero-visual{position:relative;height:100vh;min-height:640px;z-index:2}
-.hero-visual .img-slot{position:absolute;inset:0}
-.hero-visual .img-slot img{
-  width:100%;height:100%;object-fit:cover;
-  object-position:74% 32%;
-  filter:contrast(1.1) saturate(1.08) brightness(1.02);
-  image-rendering:-webkit-optimize-contrast;
+.hero-title__kicker{
+  display:block;
+  font-family:var(--sans);font-weight:400;
+  font-size:clamp(12px,3.2vw,15px);
+  letter-spacing:.04em;
+  line-height:1.65;
+  color:rgba(226,194,142,.88);
+  text-wrap:balance;
 }
-.hero-visual .img-slot::after{
-  content:'';position:absolute;z-index:1;pointer-events:none;
-  left:0;bottom:0;width:min(56%,480px);height:min(42%,320px);
+
+/* ---- ring stage: the reserved safe zone for the 3D ring ---- */
+.hero-stage{
+  position:relative;z-index:1;
+  width:100%;
+  /* Mobile keeps a large stage so the ring stays a hero-scale object, not a thumbnail */
+  min-height:clamp(200px,34svh,380px);
+  align-self:stretch;
+  /* never intercepts touch: native scrolling always wins over the canvas */
+  pointer-events:none;
+  touch-action:pan-y;
+}
+/* dark stone plinth: grounds the ring without competing with it */
+.hero-stage__floor{
+  position:absolute;left:50%;bottom:4%;
+  width:min(78%,340px);height:34%;
+  transform:translateX(-50%);
+  pointer-events:none;
   background:
-    radial-gradient(ellipse 80% 70% at 46% 56%, rgba(8,6,5,.98) 0%, rgba(12,10,8,.9) 40%, rgba(14,11,8,.5) 70%, transparent 100%),
-    linear-gradient(14deg, transparent 0 38%, rgba(226,194,142,.08) 39%, transparent 42% 100%);
+    radial-gradient(ellipse 70% 55% at 50% 28%, rgba(226,194,142,.14) 0%, transparent 70%),
+    radial-gradient(ellipse 92% 80% at 50% 100%, rgba(8,6,5,.92) 0%, rgba(14,11,9,.55) 48%, transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 70% 85% at 50% 70%, #000 0%, transparent 78%);
+          mask-image:radial-gradient(ellipse 70% 85% at 50% 70%, #000 0%, transparent 78%);
+}
+.hero-stage__floor::before{
+  content:'';position:absolute;inset:18% 8% 8%;
+  background:
+    linear-gradient(118deg, transparent 36%, rgba(180,150,110,.07) 48%, transparent 58%),
+    linear-gradient(162deg, transparent 40%, rgba(120,100,80,.06) 55%, transparent 68%);
+  opacity:.85;
+}
+.hero-poster{
+  position:absolute;left:50%;top:46%;
+  transform:translate(-50%,-50%);
+  height:88%;width:auto;max-width:94%;
+  object-fit:contain;
+  opacity:1;
+  transition:opacity .95s var(--ease-cine);
+  will-change:opacity;
+  filter:drop-shadow(0 18px 28px rgba(0,0,0,.45));
+}
+.hero-stage.ring-live .hero-poster{opacity:0}
+
+/* ---- foot: CTAs + scroll cue (supporting copy lives in the intro) ---- */
+.hero-foot{
+  position:relative;z-index:3;width:100%;
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(16px,2.8svh,28px);
+}
+.hero-lede{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(14.5px,4vw,20px);
+  line-height:1.75;
+  color:#ddd4c6;
+  max-width:31ch;
+  text-wrap:balance;
+  text-align:center;
+  text-shadow:0 1px 18px rgba(0,0,0,.7);
+}
+.hero-cta{
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(12px,2.2svh,20px);
+}
+/* editorial primary CTA: hairlines, not a filled button */
+.hero-cta-primary{
+  position:relative;
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:clamp(10px,2.4vw,14px);
+  padding:clamp(11px,1.6svh,14px) clamp(6px,2vw,10px);
+  font-family:var(--sans);font-weight:400;
+  font-size:clamp(12.5px,3.4vw,14.5px);
+  letter-spacing:.08em;
+  color:#efe4d2;
+  white-space:nowrap;
+}
+.hero-cta-primary::before,
+.hero-cta-primary::after{
+  content:'';position:absolute;inset-inline:clamp(-8px,-2vw,-2px);height:1px;
+  background:linear-gradient(90deg,transparent 0%, rgba(201,163,106,.55) 18%, rgba(226,194,142,.88) 50%, rgba(201,163,106,.55) 82%, transparent 100%);
+}
+.hero-cta-primary::before{top:0}
+.hero-cta-primary::after{bottom:0}
+.hero-cta-primary svg{
+  flex:0 0 auto;stroke:currentColor;opacity:.85;
+  transition:transform .55s var(--ease-lux),opacity .35s;
+}
+.hero-cta-primary:hover,
+.hero-cta-primary:focus-visible{color:var(--gold-2)}
+.hero-cta-primary:hover svg,
+.hero-cta-primary:focus-visible svg{transform:translateX(-4px);opacity:1}
+.hero-link{
+  position:relative;
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--sans);font-weight:400;
+  font-size:clamp(12.5px,3.3vw,14.5px);
+  letter-spacing:.04em;
+  color:rgba(226,194,142,.82);
+  padding:8px 2px;
+  transition:color .4s var(--ease-lux);
+}
+.hero-link:hover,.hero-link:focus-visible{color:var(--gold-2)}
+.hero-link svg{flex:0 0 auto;stroke:currentColor;transition:transform .55s var(--ease-lux)}
+.hero-link:hover svg{transform:translateX(-4px)}
+
+.hero-scroll{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:6px 14px 2px;
+  color:rgba(201,163,106,.6);
+}
+.hero-scroll__line{
+  width:1px;height:clamp(22px,4.4svh,44px);
+  background:linear-gradient(180deg,transparent,rgba(201,163,106,.75));
+}
+.hero-scroll__dot{
+  width:5px;height:5px;border-radius:50%;
+  border:1px solid rgba(201,163,106,.75);
+  animation:heroScrollPulse 3.2s var(--ease-cine) infinite;
+}
+@keyframes heroScrollPulse{
+  0%,100%{opacity:.35;transform:translateY(0)}
+  45%{opacity:1;transform:translateY(3px)}
 }
 .btn{
   display:inline-block;padding:15px 40px;font-family:var(--sans);
@@ -320,6 +532,13 @@ section{position:relative}
 .contact-copy .sec-title{text-align:right}
 .contact-copy .sec-title-line{margin:20px 0 0}
 .contact-form .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.contact-form-status{
+  font-size:14px;line-height:1.6;text-align:right;min-height:1.6em;
+  color:var(--gold-2);transition:opacity .35s var(--ease-lux);
+}
+.contact-form-status.is-error{color:#e8a4a4}
+.contact-form.is-submitting .btn-gold{opacity:.7;pointer-events:none}
+.contact-wa-btn{margin-top:4px;text-align:center}
 .contact-visual .img-slot img{filter:contrast(1.06) saturate(1.04)}
 textarea.field{min-height:132px;resize:vertical}
 
@@ -331,6 +550,8 @@ textarea.field{min-height:132px;resize:vertical}
 }
 .footer h4{font-family:var(--serif);font-weight:500;font-size:17px;color:var(--gold-2);margin-bottom:20px;letter-spacing:.04em}
 .footer-contact li{list-style:none;display:flex;align-items:center;gap:12px;color:var(--text-2);font-size:14.5px;margin-bottom:14px}
+.footer-contact a{color:inherit;transition:color .3s var(--ease-lux)}
+.footer-contact a:hover{color:var(--gold-2)}
 .footer-contact svg{flex:0 0 18px;stroke:var(--gold)}
 .footer-brand{text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px}
 .footer-social{display:flex;gap:14px}
@@ -345,29 +566,62 @@ textarea.field{min-height:132px;resize:vertical}
 .news-row{display:flex;gap:10px}
 .news-row .field{padding:12px 16px;font-size:14px}
 .btn-sm{padding:12px 24px;font-size:14px}
+.footer-legal{
+  margin-top:clamp(44px,5vw,64px);padding:28px clamp(18px,5vw,72px) 24px;
+  border-top:1px solid rgba(201,163,106,.12);text-align:center;
+}
+.footer-legal-nav{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:10px 14px;margin-bottom:14px;
+}
+.footer-legal-nav a{
+  font-size:14px;color:rgba(210,210,210,.62);white-space:nowrap;
+  transition:color .3s var(--ease-lux);
+}
+.footer-legal-nav a:hover{color:rgba(241,237,230,.92)}
+.footer-legal-nav .sep{color:rgba(201,163,106,.28);user-select:none;font-size:14px}
+.footer-legal-copy{color:rgba(210,210,210,.55);font-size:13px;letter-spacing:.04em}
 .footer-bottom{
   margin-top:clamp(44px,5vw,64px);padding:24px 0;text-align:center;
   border-top:1px solid rgba(201,163,106,.12);
   color:rgba(210,210,210,.55);font-size:13px;letter-spacing:.04em;
 }
 
-/* ============ 3D RING CANVAS ============ */
+/* ============ 3D RING CANVAS ============
+   Fixed fullscreen stage above section *backgrounds*, below every
+   piece of real content. Content wraps are raised to z-index 3 so
+   the ring can travel the gutters / negative space of every section
+   without covering headings, cards, forms or CTAs. The footer stays
+   fully above — the timeline fades the ring out before it arrives.
+   ========================================================= */
+/* opacity is driven per-frame from the timeline, so no CSS transition here */
 #ring-canvas{
-  position:fixed;top:0;left:0;width:100vw;height:100vh;
-  z-index:60;pointer-events:none;background:transparent;
-  opacity:0;transition:opacity 2.4s var(--ease-cine);
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  z-index:2;pointer-events:none;background:transparent;
+  opacity:0;
+  contain:layout paint style;
 }
-#ring-canvas.on{opacity:1}
+
+/* content above the ring; section backgrounds stay underneath */
+.categories>.wrap,
+.featured>.wrap,
+.reviews>.wrap,
+.contact>.wrap{position:relative;z-index:3}
+.footer{position:relative;z-index:3}
+
+/* ============ FOCUS ============ */
+:focus-visible{
+  outline:2px solid var(--gold-2);
+  outline-offset:3px;
+  border-radius:2px;
+}
+.categories :focus-visible,.reviews :focus-visible{outline-color:#8a6a35}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width:1024px){
   .cat-grid,.feat-grid{grid-template-columns:repeat(2,1fr)}
   .rev-grid{grid-template-columns:1fr;max-width:540px;margin-inline:auto;margin-top:52px}
-  .hero{grid-template-columns:1fr}
-  .hero-visual{position:absolute;inset:0;opacity:.68;min-height:0}
-  .hero-visual .img-slot img{object-position:70% 30%}
-  .hero-visual .img-slot::after{width:min(64%,540px);height:min(46%,360px)}
-  .hero-copy{padding-top:168px;padding-bottom:80px}
   .contact-grid{grid-template-columns:1fr;gap:40px}
   .contact-visual{order:2;max-width:520px;margin-inline:auto;width:100%}
   .footer-grid{grid-template-columns:1fr;text-align:center}
@@ -375,18 +629,137 @@ textarea.field{min-height:132px;resize:vertical}
   .footer-news{text-align:center}
   .news-row{justify-content:center}
 }
-@media (max-width:640px){
+@media (max-width:1023.98px){
   .nav-links{display:none}
   .nav-burger{display:block}
+  /* keep the bar mark clearly subordinate to the hero wordmark */
+  .nav .logo .l1{font-size:19px;letter-spacing:.34em;text-indent:.34em}
+  .nav .logo .l2{font-size:7.5px;letter-spacing:.44em;text-indent:.44em;margin-top:4px}
+}
+@media (min-width:1024px){
+  .nav-panel{display:none}
+}
+@media (max-width:640px){
   .cat-grid,.feat-grid{grid-template-columns:1fr 1fr;gap:14px}
   .cat-body{padding:18px 14px 22px}
   .cat-body h3{font-size:16px}
-  .hero-cta .btn{padding:13px 28px;font-size:14px}
-  .hero-copy{padding-top:148px;padding-inline:20px}
-  .hero-sub{font-size:17px;margin-bottom:36px}
   .sec-pad{padding:clamp(64px,14vw,88px) 0}
   .contact-form .row{grid-template-columns:1fr}
 }
+
+/* ---- very small phones (320x568 / 360x640): tighten, never clip ---- */
+@media (max-width:359.98px){
+  .hero{row-gap:6px}
+  .hero-title__mark{font-size:clamp(38px,16vw,52px);letter-spacing:.26em;text-indent:.26em}
+  .hero-rule{width:min(80%,240px);margin-block:9px 8px}
+  .hero-stage{min-height:172px}
+  .hero-cta{gap:10px}
+  .hero-cta-primary{font-size:12px;letter-spacing:.06em}
+  .hero-link{font-size:12px}
+  .hero-scroll{display:none}
+}
+/* short viewports (landscape phones, 320x568 with browser chrome) */
+@media (max-height:620px) and (max-width:1023.98px){
+  .hero-scroll{display:none}
+  .hero-stage{min-height:156px}
+}
+@media (orientation:landscape) and (max-height:520px){
+  .hero{
+    grid-template-rows:auto minmax(0,1fr);
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    align-items:center;
+    row-gap:0;column-gap:clamp(16px,4vw,40px);
+    padding-block:calc(var(--nav-h) + 10px) 14px;
+  }
+  .hero-intro{grid-column:1;grid-row:1;align-self:end}
+  .hero-foot{grid-column:1;grid-row:2;align-self:start;gap:12px}
+  .hero-stage{grid-column:2;grid-row:1 / span 2;min-height:0;height:100%}
+  .hero-stage__floor{bottom:10%;height:28%}
+  .hero-title__mark{font-size:clamp(34px,7vw,60px)}
+  .hero-scroll{display:none}
+}
+
+/* ---- tablet ---- */
+@media (min-width:600px) and (max-width:1023.98px){
+  .hero{row-gap:clamp(14px,2.4svh,28px)}
+  .hero-title__mark{font-size:clamp(72px,11vw,116px);letter-spacing:.34em;text-indent:.34em}
+  .hero-title__kicker{font-size:15px;letter-spacing:.05em}
+  .hero-rule{width:min(56%,400px)}
+  .hero-stage{min-height:clamp(280px,36svh,460px)}
+}
+
+/* ---- desktop: wider editorial composition, ring gets its own column ---- */
+@media (min-width:1024px){
+  .hero{
+    grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);
+    grid-template-rows:minmax(0,1fr) auto auto minmax(0,1fr);
+    justify-items:stretch;
+    column-gap:clamp(24px,4vw,80px);
+    row-gap:0;
+    padding-inline:clamp(48px,7vw,120px);
+    padding-block:calc(var(--nav-h) + clamp(20px,4vh,48px)) clamp(24px,4vh,52px);
+    text-align:start;
+  }
+  .hero-intro{grid-column:1;grid-row:2;align-self:end;max-width:none}
+  .hero-foot{
+    grid-column:1;grid-row:3;align-self:start;align-items:flex-start;
+    margin-block-start:clamp(30px,4.6vh,60px);
+    gap:clamp(20px,3vh,34px);
+  }
+  .hero-stage{grid-column:2;grid-row:1 / -1;min-height:min(74vh,640px);height:100%}
+  .hero-stage__floor{width:min(72%,420px);bottom:10%;height:30%}
+  .hero-cta{align-items:flex-start}
+
+  .hero-title__mark{
+    font-size:clamp(84px,7.8vw,136px);
+    letter-spacing:.3em;text-indent:.3em;
+    text-align:start;
+  }
+  .hero-rule{margin-inline:0;width:min(74%,380px)}
+  .hero-title__kicker{font-size:clamp(15px,1.15vw,18px);letter-spacing:.05em;text-align:start}
+  .hero-cta-primary{padding-inline:0;min-width:min(100%,280px)}
+  .hero-scroll{align-self:flex-start;padding-inline:0}
+}
+@media (min-width:1440px){
+  .hero{padding-inline:clamp(80px,9vw,190px)}
+}
+
+/* ---- ring corridors: measured empty gutters the 3D path travels through ----
+   Content keeps its hierarchy; the ring adapts into the reserved negative space.
+   Mobile gets a slim edge strip; tablet/desktop open a wider cinematic lane. */
+@media (max-width:599.98px){
+  .categories .wrap,
+  .featured .wrap,
+  .reviews .wrap,
+  .contact .wrap{
+    margin-inline-end:clamp(52px,14vw,78px);
+  }
+}
+@media (min-width:600px) and (max-width:1023.98px){
+  .categories .wrap,
+  .reviews .wrap{
+    margin-inline-end:clamp(110px,16vw,200px);
+  }
+  .featured .wrap{
+    margin-inline-end:clamp(140px,20vw,280px);
+  }
+  .contact .wrap{
+    margin-inline-end:clamp(140px,18vw,260px);
+  }
+}
+@media (min-width:1024px){
+  .categories .wrap,
+  .reviews .wrap{
+    margin-inline-end:clamp(160px,16vw,260px);
+  }
+  .featured .wrap{
+    margin-inline-end:clamp(200px,22vw,340px);
+  }
+  .contact .wrap{
+    margin-inline-end:clamp(180px,20vw,300px);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -404,24 +777,63 @@ textarea.field{min-height:132px;resize:vertical}
     <span class="l1">SHAY</span>
     <span class="l2">JEWELRY</span>
   </a>
-  <button class="nav-burger" aria-label="תפריט">☰</button>
+  <button class="nav-burger" id="nav-burger" type="button"
+          aria-label="פתיחת תפריט" aria-expanded="false" aria-controls="nav-panel">
+    <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+  </button>
 </nav>
+
+<!-- mobile menu — mirrors the nav links, no new destinations -->
+<div class="nav-panel" id="nav-panel">
+  <a href="#hero">דף הבית</a>
+  <a href="#categories">קולקציות</a>
+  <span class="nav-panel__rule" aria-hidden="true"></span>
+  <a href="#featured">אודות</a>
+  <a href="#reviews">ביקורות</a>
+  <a href="#contact">צור קשר</a>
+</div>
 
 <!-- ==================== HERO ==================== -->
 <section class="hero" id="hero">
-  <div class="hero-copy">
-    <div class="hero-logo reveal">
-      <div class="l1">SHAY</div>
-      <div class="l2">JEWELRY</div>
-    </div>
-    <p class="hero-sub reveal">תכשיטים בעבודת יד עם יהלומים טבעיים וזהב איכותי. איכות שנשארת לנצח</p>
-    <div class="hero-cta reveal">
-      <a href="#featured" class="btn btn-gold">לצפייה בקולקציה</a>
-      <a href="#contact" class="btn btn-ghost">קבעי פגישה</a>
-    </div>
+  <div class="hero-bg" aria-hidden="true">
+    <span class="hero-bg__shaft"></span>
+    <span class="hero-bg__pool"></span>
+    <span class="hero-bg__grain"></span>
   </div>
-  <div class="hero-visual">
-    <div class="img-slot"><img src="images/hero.jpg?v=no-static-ring" alt="SHAY JEWELRY — תכשיטי יוקרה" fetchpriority="high" decoding="sync" width="872" height="714"></div>
+
+  <div class="hero-intro">
+    <h1 class="hero-title">
+      <span class="hero-title__mark" dir="ltr">SHAY</span>
+      <span class="hero-rule" aria-hidden="true"><i></i></span>
+      <span class="hero-title__kicker">תכשיטים בעבודת יד · יהלומים טבעיים</span>
+    </h1>
+  </div>
+
+  <!-- reserved safe zone for the 3D ring; the poster keeps it filled until WebGL is ready -->
+  <div class="hero-stage" id="ring-stage-hero" data-ring-zone="hero">
+    <span class="hero-stage__floor" aria-hidden="true"></span>
+    <img class="hero-poster" id="hero-poster"
+         src="images/ring-poster.webp"
+         alt="טבעת אירוסין סוליטר בזהב עם יהלום — SHAY JEWELRY"
+         width="955" height="1100" fetchpriority="high" decoding="async">
+  </div>
+
+  <div class="hero-foot">
+    <p class="hero-lede">זהב אמיתי ויהלומים טבעיים, בעבודת&nbsp;יד בטבריה — איכות שנשארת לנצח.</p>
+    <div class="hero-cta">
+      <a href="#featured" class="hero-cta-primary">
+        לצפייה בקולקציה
+        <svg width="16" height="9" viewBox="0 0 16 9" fill="none" stroke-width="1.15" aria-hidden="true"><path d="M15 4.5H1M1 4.5L4.8 1M1 4.5L4.8 8"/></svg>
+      </a>
+      <a href="#contact" class="hero-link">
+        קביעת פגישה אישית
+        <svg width="15" height="9" viewBox="0 0 15 9" fill="none" stroke-width="1.2" aria-hidden="true"><path d="M14 4.5H1M1 4.5L4.6 1M1 4.5L4.6 8"/></svg>
+      </a>
+    </div>
+    <a href="#categories" class="hero-scroll" aria-label="גלול אל הקולקציות">
+      <span class="hero-scroll__line" aria-hidden="true"></span>
+      <span class="hero-scroll__dot" aria-hidden="true"></span>
+    </a>
   </div>
 </section>
 
@@ -436,28 +848,28 @@ textarea.field{min-height:132px;resize:vertical}
         <div class="img-slot"><img src="images/cat1.jpg" alt="טבעות זהב" loading="lazy"></div>
         <div class="cat-body">
           <h3>טבעות זהב</h3>
-          <a href="#">לצפייה בקולקציה ‹</a>
+          <a href="rings.html">לצפייה בקולקציה ‹</a>
         </div>
       </article>
       <article class="cat-card reveal">
         <div class="img-slot"><img src="images/cat4.jpg" alt="עגילים" loading="lazy"></div>
         <div class="cat-body">
           <h3>עגילים</h3>
-          <a href="#">לצפייה בקולקציה ‹</a>
+          <a href="earrings.html">לצפייה בקולקציה ‹</a>
         </div>
       </article>
       <article class="cat-card reveal">
         <div class="img-slot"><img src="images/cat3.jpg" alt="שרשראות" loading="lazy"></div>
         <div class="cat-body">
           <h3>שרשראות</h3>
-          <a href="#">לצפייה בקולקציה ‹</a>
+          <a href="necklaces.html">לצפייה בקולקציה ‹</a>
         </div>
       </article>
       <article class="cat-card reveal">
         <div class="img-slot"><img src="images/cat2.jpg" alt="טבעות אירוסין" loading="lazy"></div>
         <div class="cat-body">
           <h3>טבעות אירוסין</h3>
-          <a href="#">לצפייה בקולקציה ‹</a>
+          <a href="engagement-rings.html">לצפייה בקולקציה ‹</a>
         </div>
       </article>
     </div>
@@ -472,23 +884,23 @@ textarea.field{min-height:132px;resize:vertical}
     <div class="feat-grid">
       <article class="feat-card reveal">
         <div class="img-slot"><img src="images/feat1.jpg" alt="טבעת סוליטר יהלום" loading="lazy"></div>
-        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+        <div class="feat-body"><a href="product-ring.html?item=1">צפה בפריט</a></div>
       </article>
       <article class="feat-card reveal">
         <div class="img-slot"><img src="images/feat2.jpg" alt="טבעת איטרניטי יהלומים" loading="lazy"></div>
-        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+        <div class="feat-body"><a href="product-ring.html?item=2">צפה בפריט</a></div>
       </article>
       <article class="feat-card reveal">
         <div class="img-slot"><img src="images/feat3.jpg" alt="סט טבעות יהלומים" loading="lazy"></div>
-        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+        <div class="feat-body"><a href="product-ring.html?item=3">צפה בפריט</a></div>
       </article>
       <article class="feat-card reveal">
         <div class="img-slot"><img src="images/feat4.jpg" alt="טבעת איטרניטי" loading="lazy"></div>
-        <div class="feat-body"><a href="#">צפה בפריט</a></div>
+        <div class="feat-body"><a href="product-ring.html?item=4">צפה בפריט</a></div>
       </article>
     </div>
     <div class="feat-more reveal">
-      <a href="#" class="btn btn-ghost">לצפייה בכל הקולקציות</a>
+      <a href="#categories" class="btn btn-ghost">לצפייה בכל הקולקציות</a>
     </div>
   </div>
 </section>
@@ -550,13 +962,27 @@ textarea.field{min-height:132px;resize:vertical}
       <h2 class="sec-title">צור קשר</h2>
       <div class="sec-title-line"></div>
       <p>נשמח לענות לך ולתת את השירות הטוב ביותר</p>
-      <form class="contact-form" onsubmit="event.preventDefault()">
+      <form
+        id="contact-form"
+        class="contact-form"
+        action="https://formspree.io/f/xeajpzzn"
+        method="POST"
+      >
+        <input type="hidden" name="_subject" value="פנייה חדשה מאתר Shay Jewlery">
         <div class="row">
-          <input class="field" type="text" name="name" placeholder="שם מלא" required>
-          <input class="field" type="tel" name="phone" placeholder="טלפון" required>
+          <input class="field" type="text" name="name" placeholder="שם מלא" required autocomplete="name">
+          <input class="field" type="tel" name="phone" placeholder="טלפון" required autocomplete="tel">
         </div>
         <textarea class="field" name="message" placeholder="הודעה"></textarea>
+        <p class="contact-form-status" id="contact-form-status" role="status" aria-live="polite"></p>
         <button class="btn btn-gold" type="submit">שלח הודעה</button>
+        <a
+          id="contact-whatsapp-btn"
+          class="btn btn-ghost contact-wa-btn"
+          href="https://wa.me/97246717547"
+          target="_blank"
+          rel="noopener noreferrer"
+        >שלח הודעה בווצאפ</a>
       </form>
     </div>
     <div class="contact-visual reveal">
@@ -582,7 +1008,7 @@ textarea.field{min-height:132px;resize:vertical}
         <span class="l2" style="font-size:10px">JEWELRY</span>
       </a>
       <div class="footer-social">
-        <a href="#" aria-label="Instagram">
+        <a href="https://www.instagram.com/shay_jewelery?igsh=MXBtcWY5bmh3eHd1eg==" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg>
         </a>
         <a href="#" aria-label="Facebook">
@@ -595,7 +1021,7 @@ textarea.field{min-height:132px;resize:vertical}
       <ul class="footer-contact">
         <li>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.4 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 2z"/></svg>
-          <span>04-6717547</span>
+          <a href="tel:+97246717547">04-6717547</a>
         </li>
         <li>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -603,595 +1029,1201 @@ textarea.field{min-height:132px;resize:vertical}
         </li>
         <li>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 11.5a8.4 8.4 0 0 1-8.4 8.4 8.3 8.3 0 0 1-4-1L3 20l1.2-5.4a8.3 8.3 0 0 1-1-4A8.4 8.4 0 0 1 11.6 2a8.4 8.4 0 0 1 9.4 9.5z"/></svg>
-          <a href="https://wa.me/97246717547">שלח הודעה ב־WhatsApp</a>
+          <a href="https://wa.me/97246717547" target="_blank" rel="noopener noreferrer">שלח הודעה בווצאפ</a>
         </li>
       </ul>
     </div>
       </div>
-  <div class="footer-bottom">© כל הזכויות שמורות ל־SHAY JEWELRY</div>
+  <div class="footer-legal">
+    <nav class="footer-legal-nav" aria-label="קישורים משפטיים">
+      <a href="terms.html">תקנון שימוש</a>
+      <span class="sep" aria-hidden="true">|</span>
+      <a href="privacy.html">מדיניות פרטיות</a>
+      <span class="sep" aria-hidden="true">|</span>
+      <a href="accessibility.html">הסדרי נגישות</a>
+    </nav>
+    <p class="footer-legal-copy">© Shay Jewellery. כל הזכויות שמורות.</p>
+  </div>
 </footer>
 
 <!-- ==================== 3D RING (signature element) ==================== -->
 <canvas id="ring-canvas" aria-hidden="true"></canvas>
 
-<!-- three.js + GLTFLoader רשמי (שומר חומרים וטקסטורות מקוריים) + GSAP ScrollTrigger -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';document.head.appendChild(s)"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"
-        onerror="var s=document.createElement('script');s.src='https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js';document.head.appendChild(s)"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js';document.head.appendChild(s)"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
-        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js';document.head.appendChild(s)"></script>
-
 <script>
 /* ============================================================
-   UI: nav, reveals
+   UI — nav bar, mobile menu, scroll reveals
    ============================================================ */
-(function(){
+(function () {
   const nav = document.getElementById('nav');
-  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), {passive:true});
+  const onScroll = () => nav.classList.toggle('scrolled', scrollY > 40);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:.12});
-  document.querySelectorAll('.reveal').forEach((el,i) => {
+  /* ---- mobile menu (built from the same links as the desktop nav) ---- */
+  const burger = document.getElementById('nav-burger');
+  const panel = document.getElementById('nav-panel');
+  const panelLinks = [...panel.querySelectorAll('a')];
+  let lastFocus = null;
+
+  function setMenu(open) {
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'סגירת תפריט' : 'פתיחת תפריט');
+    panel.classList.toggle('open', open);
+    document.body.classList.toggle('menu-open', open);
+    if (open) {
+      lastFocus = document.activeElement;
+      panelLinks[0].focus({ preventScroll: true });
+    } else if (lastFocus) {
+      lastFocus.focus({ preventScroll: true });
+      lastFocus = null;
+    }
+  }
+  burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+  panel.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  addEventListener('keydown', (e) => {
+    if (!panel.classList.contains('open')) return;
+    if (e.key === 'Escape') { setMenu(false); return; }
+    if (e.key !== 'Tab') return;
+    // keep focus inside the open menu
+    const first = panelLinks[0], last = panelLinks[panelLinks.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  matchMedia('(min-width:1024px)').addEventListener('change', (m) => { if (m.matches) setMenu(false); });
+
+  /* ---- scroll reveals ---- */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .12 });
+  document.querySelectorAll('.reveal').forEach((el, i) => {
     el.style.transitionDelay = (i % 4) * 90 + 'ms';
     io.observe(el);
   });
 
-  // active nav link
+  /* ---- active nav link ---- */
   const links = [...document.querySelectorAll('.nav-links a')];
-  const secs = links.map(a => document.querySelector(a.getAttribute('href')));
-  const io2 = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting){
-        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+  const secs = links.map((a) => document.querySelector(a.getAttribute('href')));
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+    });
+  }, { rootMargin: '-45% 0px -45% 0px' });
+  secs.forEach((s) => s && io2.observe(s));
+
+  /* missing product photos fall back to the designed placeholder slot */
+  document.querySelectorAll('.img-slot img').forEach((img) => {
+    img.addEventListener('error', () => { img.remove(); }, { once: true });
+  });
+
+  /* ---- contact form → Formspree ---- */
+  const WHATSAPP_NUMBER = '97246717547';
+  const contactForm = document.getElementById('contact-form');
+  const contactStatus = document.getElementById('contact-form-status');
+  const whatsappBtn = document.getElementById('contact-whatsapp-btn');
+
+  function buildWhatsAppUrl() {
+    if (!contactForm) return `https://wa.me/${WHATSAPP_NUMBER}`;
+    const name = contactForm.querySelector('[name="name"]')?.value.trim() || '';
+    const phone = contactForm.querySelector('[name="phone"]')?.value.trim() || '';
+    const message = contactForm.querySelector('[name="message"]')?.value.trim() || '';
+    const parts = ['שלום, פנייה מאתר Shay Jewlery.'];
+    if (name) parts.push(`שם: ${name}`);
+    if (phone) parts.push(`טלפון: ${phone}`);
+    if (message) parts.push(`הודעה: ${message}`);
+    const text = encodeURIComponent(parts.join('\n'));
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+  }
+
+  if (whatsappBtn) {
+    whatsappBtn.addEventListener('click', () => {
+      whatsappBtn.href = buildWhatsAppUrl();
+    });
+  }
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (contactForm.classList.contains('is-submitting')) return;
+
+      contactForm.classList.add('is-submitting');
+      if (contactStatus) {
+        contactStatus.textContent = 'שולח...';
+        contactStatus.classList.remove('is-error');
+      }
+
+      try {
+        const res = await fetch(contactForm.action, {
+          method: 'POST',
+          body: new FormData(contactForm),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (res.ok) {
+          contactForm.reset();
+          if (contactStatus) {
+            contactStatus.textContent = 'ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.';
+            contactStatus.classList.remove('is-error');
+          }
+        } else {
+          throw new Error('formspree error');
+        }
+      } catch {
+        if (contactStatus) {
+          contactStatus.textContent = 'לא הצלחנו לשלוח את ההודעה. נסה/י שוב או צור/י קשר בטלפון.';
+          contactStatus.classList.add('is-error');
+        }
+      } finally {
+        contactForm.classList.remove('is-submitting');
       }
     });
-  }, {rootMargin:'-45% 0px -45% 0px'});
-  secs.forEach(s => s && io2.observe(s));
+  }
 })();
+</script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/build/three.module.min.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+
+<script type="module">
+/* ============================================================
+   SHAY JEWELRY — scroll-driven 3D ring
+   ------------------------------------------------------------
+   Hierarchy:   pivot (animated) > orient (fixed -90°X) > holder
+                (normalised scale/centre) > glTF scene
+   Journey:     ONE persistent canvas + global scroll progress.
+                DESKTOP_RING_PATH / MOBILE_RING_PATH share the same story
+                with viewport-authored waypoints through measured RING AREA
+                gutters — never a hero-only decoration, never a teleport.
+   Placement:   content wraps sit above the canvas; the ring travels
+                negative space and may pass visually behind cards.
+   Rendering:   on-demand RAF; refs only — no React state on scroll.
+   ============================================================ */
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 /* ============================================================
-   MODEL LOADING — THREE.GLTFLoader הרשמי
-   שומר את החומרים והטקסטורות המקוריים של המודל, ללא החלפה.
+   1. CONFIGURATION — the single place to tune the presentation
    ============================================================ */
-const MODEL_URLS = [
-  './models/shay-ring.glb',                                  // הטבעת האמיתית — Meshy rose-gold solitaire (המאושרת)
-  './Meshy_AI_Starburst_Diamond_Rin_0705120231_texture.glb', // גיבוי — הדגם הקודם, אם החדש חסר
-  './ring.glb'
-];
+const CONFIG = {
+  models: {
+    hi: 'models/shay-ring-hi.glb',   // 3.3 MB · 2048² maps · meshopt
+    lo: 'models/shay-ring-lo.glb',   // 2.1 MB · 1024² maps · meshopt
+  },
 
-/* JEWELRY_QUALITY — נקודת כיוון יחידה לרינדור פרימיום (שנה כאן בלבד) */
-const JEWELRY_QUALITY = {
-  dprDesktopMin: 2, dprDesktopMax: 3,
-  dprMobileMax: 1.75,
-  toneExposure: 1.48,
-  envSigma: 0.005,
-  envCubemapSize: 640,
-  envMapIntensity: 3.85,
-  metalRoughnessCap: 0.07,
-  clearcoat: 0.38,
-  clearcoatRoughness: 0.03,
-  normalScaleBoost: 1.32,
-  emissiveBase: 0.18,
-  emissiveSparkleMax: 0.72,
-  cameraFov: 26,
-  ringTiltX: 0.22,
-  scrollScrub: 1.65,
+  /* The GLB ships lying flat: hole axis +Y, gemstone toward +Z.
+     -90° about X stands it upright with the stone on top. */
+  orientX: -Math.PI / 2,
+
+  /* Responsive camera + framing presets — authored per breakpoint,
+     never derived by scaling one desktop value.
+       fov   lower = longer lens = product-photography feel
+       dist  camera distance from the ring
+       fill  fraction of the zone height the ring occupies
+       pad   safe margin (css px) kept clear inside every zone
+       turn  hero turntable angle (rad, negative = stone catches the key light)
+       idle  amplitude multiplier for the idle drift
+     maxVh cap on the ring's on-screen height, so it stays a considered
+           product shot instead of growing into a configurator close-up  */
+  presets: [
+    /* Mobile keeps comparable visual importance to desktop — larger fill/maxVh,
+       slightly closer camera, never a thumbnail-scale product shot. */
+    { id: 'mobile-s', maxW: 359,      fov: 28, dist: 5.15, fill: .92, maxVh: .38,  pad: 5,  turn: -0.30, tilt: 0.04, idle: 0.45 },
+    { id: 'mobile-m', maxW: 392,      fov: 27, dist: 5.25, fill: .90, maxVh: .40,  pad: 6,  turn: -0.32, tilt: 0.04, idle: 0.50 },
+    { id: 'mobile-l', maxW: 767,      fov: 26, dist: 5.40, fill: .86, maxVh: .36,  pad: 8,  turn: -0.34, tilt: 0.05, idle: 0.55 },
+    { id: 'tablet',   maxW: 1023,     fov: 25, dist: 5.90, fill: .74, maxVh: .36,  pad: 16, turn: -0.36, tilt: 0.05, idle: 0.75 },
+    { id: 'desktop',  maxW: Infinity, fov: 23, dist: 6.30, fill: .72, maxVh: .48,  pad: 26, turn: -0.38, tilt: 0.06, idle: 0.95 },
+  ],
+
+  /* Smoothing of the normalised scroll progress (higher = tighter). */
+  scrollDamping: 5.5,
+  /* Below this delta the timeline is considered settled and the loop parks. */
+  settleEpsilon: 0.00015,
+
+  /* A jewellery light box is a high-dynamic-range place: one dominant soft
+     key, a warm rim that keeps the band's silhouette off the black
+     background, almost no ambient, and a couple of small hard sources so the
+     brilliant *flashes* instead of glowing. */
+  lighting: {
+    /* Kept deliberately low. The environment's job here is to stop the metal
+       going black in the passages the lamps miss — not to light the ring. Push
+       it up and the broad panels wash the whole band to one pale tone, which
+       is what makes rendered jewellery look like plastic. */
+    envIntensity: 0.28,
+    exposure: 1.10,
+    key:  { color: 0xfff0d8, intensity: 4.15, pos: [ 3.8,  5.2,  4.0] },
+    rim:  { color: 0xffcf94, intensity: 2.45, pos: [-4.4,  2.0, -4.4] },
+    rim2: { color: 0xbcd2ff, intensity: 0.70, pos: [ 5.0,  0.2, -3.2] },
+    fill: { color: 0xf3e6d2, intensity: 0.28, pos: [-3.4, -1.8,  4.2] },
+    spark:{ color: 0xffffff, intensity: 13.0, distance: 22, pos: [ 1.35,  3.4,  4.5] },
+    ambient: { color: 0x231b12, intensity: 0.14 },
+  },
+
+  material: {
+    /* Factors multiply the authored glTF maps — the maps themselves are never
+       replaced, so the ring keeps its own surface character and every detail
+       the artist painted survives.
+
+       The asset paints band and gemstones into one material and separates
+       them only by the metalness map (gold ≈ 1, stones ≈ 0). It also gives
+       both the same roughness: measured mean 0.21 across 85% of the surface.
+       That single value is wrong for both halves — it leaves the gold looking
+       soft and matte, and it makes the brilliants look frosted rather than
+       clear. Splitting roughness on the metalness mask fixes both without
+       touching geometry or textures. */
+    metalnessFactor: 1.0,
+    normalScale: 0.94,
+    anisotropy: 8,
+    goldRoughness:  0.55,   // 0.21 -> ~0.12 : polished, still not a mirror
+    stoneRoughness: 0.14,   // 0.21 -> ~0.03 : brilliant, not frosted
+    /* Stones rendered as plain dielectrics also come out milky, because they
+       get a full Lambertian diffuse that a real brilliant does not have.
+       Fading that diffuse where metalness drops leaves the speculars
+       untouched and turns white plastic into glass. Gold is unaffected. */
+    stoneDiffuse: 0.08,
+  },
+
+  /* A ground shadow, not a halo: it has to clear the bottom of the band
+     (half the ring height) or it reads as a smudge across the metal. */
+  shadow: { opacity: 0.32, spread: 1.65, height: 0.28, drop: 0.62 },
 };
 
-/* שדרוג פיזיקלי של החומר המקורי — בלי להחליף אף טקסטורה.
-   כל המפות (baseColor/metallicRoughness/normal/emissive) נשמרות במלואן;
-   רק תגובת הרינדור (roughness/clearcoat/envMap) מכוונת מעליהן. */
-function upgradeToJewelryMaterial(mat, three, envMap){
-  const phys = new three.MeshPhysicalMaterial({
-    map: mat.map || null,
-    normalMap: mat.normalMap || null,
-    normalScale: mat.normalScale ? mat.normalScale.clone() : new three.Vector2(1, 1),
-    metalnessMap: mat.metalnessMap || null,
-    roughnessMap: mat.roughnessMap || null,
-    aoMap: mat.aoMap || null,
-    emissiveMap: mat.emissiveMap || null,
-    emissive: mat.emissive ? mat.emissive.clone() : new three.Color(0x000000),
-    color: mat.color ? mat.color.clone() : new three.Color(0xffffff),
-    metalness: mat.metalness != null ? mat.metalness : 1,
-    roughness: mat.roughness != null ? mat.roughness : 1,
-    side: mat.side,
-    transparent: mat.transparent,
-    opacity: mat.opacity,
-    alphaTest: mat.alphaTest || 0,
-    envMap: envMap || null,
-  });
-  // metalnessMap שולט בפיקסלים (מתכת vs יהלום) — לא דורסים לערך אחיד.
-  phys.metalness = mat.metalness != null ? mat.metalness : 1;
-  phys.roughness = Math.min(phys.roughness, JEWELRY_QUALITY.metalRoughnessCap);
-  phys.envMapIntensity = JEWELRY_QUALITY.envMapIntensity;
-  phys.clearcoat = JEWELRY_QUALITY.clearcoat;
-  phys.clearcoatRoughness = JEWELRY_QUALITY.clearcoatRoughness;
-  phys.reflectivity = 1;
-  phys.ior = 1.5;
-  phys.normalScale.multiplyScalar(JEWELRY_QUALITY.normalScaleBoost);
-  phys.side = three.FrontSide;
-  if (phys.emissiveMap){
-    phys.emissive = new three.Color(0xfff8ee);
-    phys.emissiveIntensity = JEWELRY_QUALITY.emissiveBase;
-  }
-  phys.needsUpdate = true;
-  return phys;
+/* ============================================================
+   RING PATHS — one continuous physical journey, two compositions
+   ------------------------------------------------------------
+   DESKTOP_RING_PATH and MOBILE_RING_PATH tell the same story
+   (hero → collections → featured → reviews → contact → fade)
+   with viewport-appropriate coordinates so the ring never sits
+   on copy. Opacity stays live between sections — no teleport,
+   no reset, no second ring.
+   `pin: true` freezes the hero zone's document Y so the exit is
+   choreographed, not dragged 1:1 by scroll.
+   ============================================================ */
+const DESKTOP_RING_PATH = [
+  /* hero: large, editorial, stone catching the key light */
+  { id: 'hero',       zone: 'hero',       pin: true, fill: 1.00, turn:  0.00, tilt:  0.00, roll:  0.010, dolly: 1.00, opacity: 1.00, env: 1.00, key: 1.00, ax: -0.04, ay:  0.00 },
+  { id: 'heroLift',   zone: 'hero',       pin: true, fill: 0.94, turn: -0.10, tilt: -0.01, roll:  0.006, dolly: 1.02, opacity: 1.00, env: 1.04, key: 1.04, ax:  0.02, ay: -0.08 },
+  /* drift toward the corridor — still the same ring, still visible */
+  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.72, turn: -0.22, tilt: -0.02, roll:  0.000, dolly: 1.08, opacity: 0.92, env: 1.00, key: 1.00, ax:  0.18, ay: -0.28 },
+  /* cream collections: travel the reserved gutter, slightly deeper */
+  { id: 'catIn',      zone: 'categories',            fill: 0.58, turn: -0.18, tilt:  0.02, roll: -0.01, dolly: 1.12, opacity: 0.78, env: 0.96, key: 0.96, ax:  0.00, ay:  0.55 },
+  { id: 'categories', zone: 'categories',            fill: 0.64, turn:  0.08, tilt:  0.04, roll: -0.015,dolly: 1.10, opacity: 0.88, env: 1.00, key: 1.00, ax:  0.00, ay:  0.00 },
+  { id: 'catOut',     zone: 'categories',            fill: 0.54, turn:  0.20, tilt:  0.02, roll: -0.01, dolly: 1.14, opacity: 0.72, env: 0.96, key: 0.96, ax:  0.00, ay: -0.55 },
+  /* featured: open up beside the dark product grid */
+  { id: 'featIn',     zone: 'featured',              fill: 0.60, turn:  0.10, tilt:  0.03, roll: -0.01, dolly: 1.06, opacity: 0.82, env: 1.02, key: 1.02, ax:  0.00, ay:  0.60 },
+  { id: 'feature',    zone: 'featured',              fill: 0.84, turn:  0.22, tilt:  0.05, roll: -0.02, dolly: 0.96, opacity: 1.00, env: 1.12, key: 1.08, ax:  0.00, ay:  0.00 },
+  { id: 'featOut',    zone: 'featured',              fill: 0.58, turn:  0.36, tilt:  0.02, roll: -0.01, dolly: 1.06, opacity: 0.78, env: 1.00, key: 1.00, ax:  0.00, ay: -0.58 },
+  /* reviews: edge passage, never over cards */
+  { id: 'revIn',      zone: 'reviews',               fill: 0.52, turn:  0.28, tilt:  0.03, roll:  0.01, dolly: 1.14, opacity: 0.70, env: 0.96, key: 0.96, ax:  0.00, ay:  0.55 },
+  { id: 'reviews',    zone: 'reviews',               fill: 0.58, turn:  0.12, tilt:  0.04, roll:  0.012,dolly: 1.12, opacity: 0.82, env: 1.00, key: 1.00, ax:  0.00, ay:  0.00 },
+  { id: 'revOut',     zone: 'reviews',               fill: 0.50, turn: -0.06, tilt:  0.02, roll:  0.01, dolly: 1.16, opacity: 0.70, env: 0.96, key: 0.96, ax:  0.00, ay: -0.55 },
+  /* contact: closer craftsmanship beat, then leave before the footer */
+  { id: 'detailIn',   zone: 'contact',               fill: 0.62, turn: -0.04, tilt:  0.04, roll:  0.01, dolly: 1.02, opacity: 0.85, env: 1.06, key: 1.06, ax:  0.00, ay:  0.55 },
+  { id: 'detail',     zone: 'contact',               fill: 0.88, turn: -0.18, tilt:  0.06, roll:  0.015,dolly: 0.90, opacity: 1.00, env: 1.18, key: 1.14, ax:  0.00, ay:  0.00 },
+  { id: 'finale',     zone: 'contact',               fill: 0.64, turn: -0.28, tilt:  0.04, roll:  0.01, dolly: 1.04, opacity: 0.00, env: 1.02, key: 1.02, ax:  0.00, ay: -0.48 },
+];
+
+/* Mobile tells the same story with a recomposed path: center → edge →
+   opposite edge → foreground → lower edge. Coordinates favour the slim
+   corridor and keep the ring large enough to feel premium at 390px. */
+const MOBILE_RING_PATH = [
+  { id: 'hero',       zone: 'hero',       pin: true, fill: 1.06, turn:  0.00, tilt:  0.00, roll:  0.010, dolly: 0.98, opacity: 1.00, env: 1.00, key: 1.00, ax:  0.00, ay:  0.02 },
+  { id: 'heroLift',   zone: 'hero',       pin: true, fill: 0.98, turn: -0.10, tilt: -0.01, roll:  0.006, dolly: 1.00, opacity: 1.00, env: 1.04, key: 1.04, ax:  0.12, ay: -0.06 },
+  { id: 'heroBridge', zone: 'hero',       pin: true, fill: 0.78, turn: -0.20, tilt: -0.02, roll:  0.000, dolly: 1.06, opacity: 0.94, env: 1.00, key: 1.00, ax:  0.42, ay: -0.22 },
+  /* corridor / edge — opposite lateral accents so it never sits on cards */
+  { id: 'catIn',      zone: 'categories',            fill: 0.52, turn: -0.14, tilt:  0.02, roll: -0.01, dolly: 1.16, opacity: 0.76, env: 0.96, key: 0.96, ax:  0.15, ay:  0.50 },
+  { id: 'categories', zone: 'categories',            fill: 0.56, turn:  0.10, tilt:  0.03, roll: -0.012,dolly: 1.14, opacity: 0.86, env: 1.00, key: 1.00, ax: -0.05, ay:  0.00 },
+  { id: 'catOut',     zone: 'categories',            fill: 0.48, turn:  0.22, tilt:  0.02, roll: -0.01, dolly: 1.18, opacity: 0.72, env: 0.96, key: 0.96, ax: -0.20, ay: -0.48 },
+  { id: 'featIn',     zone: 'featured',              fill: 0.54, turn:  0.12, tilt:  0.03, roll: -0.01, dolly: 1.08, opacity: 0.80, env: 1.02, key: 1.02, ax: -0.35, ay:  0.52 },
+  { id: 'feature',    zone: 'featured',              fill: 0.72, turn:  0.20, tilt:  0.05, roll: -0.018,dolly: 0.98, opacity: 1.00, env: 1.12, key: 1.08, ax:  0.05, ay:  0.00 },
+  { id: 'featOut',    zone: 'featured',              fill: 0.50, turn:  0.32, tilt:  0.02, roll: -0.01, dolly: 1.10, opacity: 0.76, env: 1.00, key: 1.00, ax:  0.40, ay: -0.50 },
+  { id: 'revIn',      zone: 'reviews',               fill: 0.48, turn:  0.24, tilt:  0.03, roll:  0.01, dolly: 1.18, opacity: 0.70, env: 0.96, key: 0.96, ax:  0.35, ay:  0.50 },
+  { id: 'reviews',    zone: 'reviews',               fill: 0.52, turn:  0.08, tilt:  0.04, roll:  0.012,dolly: 1.16, opacity: 0.82, env: 1.00, key: 1.00, ax: -0.30, ay:  0.00 },
+  { id: 'revOut',     zone: 'reviews',               fill: 0.46, turn: -0.08, tilt:  0.02, roll:  0.01, dolly: 1.20, opacity: 0.70, env: 0.96, key: 0.96, ax: -0.15, ay: -0.48 },
+  { id: 'detailIn',   zone: 'contact',               fill: 0.56, turn: -0.02, tilt:  0.04, roll:  0.01, dolly: 1.04, opacity: 0.84, env: 1.06, key: 1.06, ax:  0.30, ay:  0.48 },
+  { id: 'detail',     zone: 'contact',               fill: 0.78, turn: -0.16, tilt:  0.06, roll:  0.014,dolly: 0.92, opacity: 1.00, env: 1.16, key: 1.12, ax: -0.10, ay:  0.00 },
+  { id: 'finale',     zone: 'contact',               fill: 0.55, turn: -0.26, tilt:  0.03, roll:  0.01, dolly: 1.06, opacity: 0.00, env: 1.02, key: 1.02, ax:  0.00, ay: -0.42 },
+];
+
+/* ============================================================
+   2. CAPABILITIES / QUALITY TIER
+   ============================================================ */
+const reduceMotionMQ = matchMedia('(prefers-reduced-motion: reduce)');
+const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+function detectTier() {
+  const mem = navigator.deviceMemory || 4;
+  const cores = navigator.hardwareConcurrency || 4;
+  const conn = navigator.connection || {};
+  const frugal = conn.saveData === true || /(^|-)(2g|slow-2g)$/.test(conn.effectiveType || '');
+  if (frugal) return 'low';
+  if (mem <= 2 || cores <= 2) return 'low';
+  if (mem <= 4 && cores <= 4) return 'balanced';
+  return 'high';
 }
 
-function enhanceModelTextures(root, three, renderer){
-  const maxAniso = renderer.capabilities.getMaxAnisotropy();
-  const sRGBKeys = new Set(['map', 'emissiveMap']);
-  const linearKeys = new Set(['normalMap', 'roughnessMap', 'metalnessMap', 'aoMap']);
-  root.traverse(o => {
-    if (!o.isMesh || !o.material) return;
-    const mats = Array.isArray(o.material) ? o.material : [o.material];
-    mats.forEach(m => {
-      Object.keys(m).forEach(key => {
-        const tex = m[key];
-        if (!tex || !tex.isTexture) return;
-        tex.anisotropy = maxAniso;
-        tex.minFilter = three.LinearMipmapLinearFilter;
-        tex.magFilter = three.LinearFilter;
-        tex.generateMipmaps = true;
-        if (sRGBKeys.has(key) && 'sRGBEncoding' in three) tex.encoding = three.sRGBEncoding;
-        else if (linearKeys.has(key) && 'LinearEncoding' in three) tex.encoding = three.LinearEncoding;
-        tex.needsUpdate = true;
-      });
-    });
-  });
+function dprCeiling(tier, mobileLike) {
+  if (!mobileLike) return tier === 'low' ? 1.25 : 2;
+  if (tier === 'low') return 1.15;
+  if (tier === 'balanced') return 1.5;
+  return 2;                                   // high-end retina phone
 }
 
-function loadGLB(url, three, envMap, renderer){
-  return new Promise((resolve, reject) => {
-    new three.GLTFLoader().load(url, gltf => {
-      const model = gltf.scene;
+const html = document.documentElement;
+const canvas = document.getElementById('ring-canvas');
+const heroStage = document.getElementById('ring-stage-hero');
 
-      const box = new three.Box3().setFromObject(model);
-      const center = box.getCenter(new three.Vector3());
-      const size = box.getSize(new three.Vector3());
-      const maxDim = Math.max(size.x, size.y, size.z) || 1;
-      model.position.sub(center);
+function bail(reason) {
+  html.dataset.ringState = 'fallback';
+  html.dataset.ringReason = reason;
+  canvas.remove();
+}
 
-      const holder = new three.Group();
-      holder.scale.setScalar(2.0 / maxDim);
-      holder.add(model);
+let tier = detectTier();
+const mobileLike = () => innerWidth < 1024;
 
-      const jewelryMats = [];
-      holder.traverse(o => {
-        if (o.isMesh && o.material){
-          const old = o.material;
-          try {
-            o.material = upgradeToJewelryMaterial(old, three, envMap);
-            if (old !== o.material) old.dispose();
-            jewelryMats.push(o.material);
-          } catch(e){
-            console.warn('Material upgrade skipped, using original:', e);
-            if (envMap) old.envMap = envMap;
-            jewelryMats.push(old);
-          }
-        }
-      });
-      enhanceModelTextures(holder, three, renderer);
-      holder.userData.jewelryMats = jewelryMats;
-      resolve(holder);
-    }, undefined, reject);
+/* ============================================================
+   3. RENDERER
+   ============================================================ */
+/* The renderer construction is the availability probe. Allocating a second
+   throwaway context just to feature-detect costs a GPU context and risks
+   disturbing the real one, so if this throws there is no WebGL and the
+   static poster simply stays. */
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: tier !== 'low',
+    powerPreference: 'high-performance',
+    stencil: false,
+    depth: true,
+    failIfMajorPerformanceCaveat: false,
   });
+} catch (err) {
+  bail('webgl-unavailable');
+  throw new Error('WebGL unavailable — static poster retained.');
+}
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+/* Khronos PBR Neutral: keeps gold saturated and refuses to clip speculars
+   into flat white blobs the way ACES does on jewellery. */
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = CONFIG.lighting.exposure;
+renderer.shadowMap.enabled = false;
+
+let dprCap = dprCeiling(tier, mobileLike());
+let cssW = 0, cssH = 0;
+
+function applySize() {
+  const w = Math.max(1, canvas.clientWidth || innerWidth);
+  const h = Math.max(1, canvas.clientHeight || innerHeight);
+  const dpr = Math.min(devicePixelRatio || 1, dprCap);
+  if (w === cssW && h === cssH && renderer.getPixelRatio() === dpr) return false;
+  cssW = w; cssH = h;
+  renderer.setPixelRatio(dpr);
+  renderer.setSize(w, h, false);      // false: never touch the CSS size
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  return true;
 }
 
 /* ============================================================
-   3D SCENE — הטבעת כסרט זהב שמלווה את הגלילה
+   4. SCENE, CAMERA, LIGHT RIG
    ============================================================ */
-(function initRing(){
-  if (!window.THREE || !THREE.GLTFLoader || !window.gsap || !window.ScrollTrigger){ setTimeout(initRing, 200); return; }
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  gsap.registerPlugin(ScrollTrigger);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(26, 1, 1.0, 24);   // tight planes = solid depth precision
+camera.position.set(0, 0, 6);
+camera.lookAt(0, 0, 0);
 
-  const canvas = document.getElementById('ring-canvas');
-  const renderer = new THREE.WebGLRenderer({
-    canvas, alpha:true, antialias:true, powerPreference:'high-performance', precision:'highp'
-  });
-  function setRendererQuality(){
-    const mobile = innerWidth < 768;
-    const dpr = mobile
-      ? Math.min(devicePixelRatio, JEWELRY_QUALITY.dprMobileMax)
-      : Math.min(Math.max(devicePixelRatio, JEWELRY_QUALITY.dprDesktopMin), JEWELRY_QUALITY.dprDesktopMax);
-    renderer.setPixelRatio(dpr);
-  }
-  setRendererQuality();
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = JEWELRY_QUALITY.toneExposure;
-  if ('physicallyCorrectLights' in renderer) renderer.physicallyCorrectLights = true;
+const L = CONFIG.lighting;
+const mkDir = (c) => {
+  const l = new THREE.DirectionalLight(c.color, c.intensity);
+  l.position.set(...c.pos);
+  scene.add(l);
+  return l;
+};
+const keyLight = mkDir(L.key);
+const rimLight = mkDir(L.rim);
+const rimLight2 = mkDir(L.rim2);
+const fillLight = mkDir(L.fill);
+const sparkLight = new THREE.PointLight(L.spark.color, L.spark.intensity, L.spark.distance, 2);
+sparkLight.position.set(...L.spark.pos);
+scene.add(sparkLight);
+scene.add(new THREE.AmbientLight(L.ambient.color, L.ambient.intensity));
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(JEWELRY_QUALITY.cameraFov, innerWidth/innerHeight, .1, 50);
-  camera.position.set(0, 0.06, 6.2);
+const BASE_INTENSITY = {
+  key: L.key.intensity, rim: L.rim.intensity, rim2: L.rim2.intensity,
+  fill: L.fill.intensity, spark: L.spark.intensity,
+};
 
-  /* --- סביבת סטודיו תכשיטים מקצועית (HDR-like) שנבנית פרוצדורלית — בלי קובץ HDR חיצוני ---
-     מעגל פאנלים סביב הטבעת מכל הכיוונים (לא רק חזית) כדי לקבל השתקפויות
-     יפות מכל זווית סיבוב, כפי שיהיה בצילום תכשיטים אמיתי בקופסת אור. */
-  function studioEnv(){
-    const env = new THREE.Scene();
-    env.background = new THREE.Color(0x030303);
-    const panel = (color, intensity, w, h, x, y, z) => {
-      const mesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(w, h),
-        new THREE.MeshBasicMaterial({color: new THREE.Color(color).multiplyScalar(intensity), side: THREE.DoubleSide})
-      );
-      mesh.position.set(x, y, z);
-      mesh.lookAt(0, 0, 0);
-      env.add(mesh);
-    };
-    panel(0xfff1d6, 14.0, 7, 5,  4.2,  5.5,  3.2);
-    panel(0xffe9c4, 5.8,  9, 3, -5.2,  2.2, -2.2);
-    panel(0xc9a36a, 4.6,  5, 5,  0, -4.2,  4.2);
-    panel(0xdfe8ff, 2.4,  4, 7, -4.2,  1.2,  5.2);
-    panel(0xfff4df, 4.8,  7, 7,  0,  0.2,  7.2);
-    panel(0xffe6bf, 3.4,  6, 6,  0,  1.2, -6.2);
-    panel(0xffefd9, 2.8,  5, 5,  5.2, -1.2, -1.2);
-    panel(0xffefd9, 2.8,  5, 5, -5.2, -1.2,  1.2);
-    panel(0xffffff, 8.2,  1.4, 1.4, 2.0, 3.6, 5.8);
-    panel(0xfff8f0, 5.4,  2.5, 2.5, -2.4, 4.8, 4.5);
-    panel(0xffffff, 5.6,  0.9, 0.9, 1.4, 4.2, 4.8);
-    panel(0xffd4a8, 4.0,  3, 2,  3.8, 3.2, 2.8);
-    const pm = new THREE.PMREMGenerator(renderer);
-    if (JEWELRY_QUALITY.envCubemapSize) pm._cubeSize = JEWELRY_QUALITY.envCubemapSize;
-    pm.compileCubemapShader();
-    const envMap = pm.fromScene(env, JEWELRY_QUALITY.envSigma).texture;
-    pm.dispose();
-    return envMap;
-  }
-  const envMap = studioEnv();
-  scene.environment = envMap;
+/* ---- procedural jewellery light-box, baked to a PMREM cube ----
+   A real light box: large soft panels all the way round (so the ring is
+   never unlit at any angle in the route) plus a few small bright cards
+   that give the brilliant its hard, moving flashes. */
+let envRT = null;
 
-  /* תאורת סטודיו תכשיטים — key חם, fill רך, rim, ונקודות specular ליהלומים */
-  const key  = new THREE.DirectionalLight(0xfff2e0, 2.45); key.position.set(3.6, 5.8, 4.8); scene.add(key);
-  const fill = new THREE.DirectionalLight(0xfff6ea, 0.82);  fill.position.set(-4.2, -0.2, 4.2); scene.add(fill);
-  const rim  = new THREE.DirectionalLight(0xf0e6d4, 0.78);  rim.position.set(-4.8, 3.2, -3.6); scene.add(rim);
-  const rim2 = new THREE.DirectionalLight(0xffefd6, 0.48);  rim2.position.set(4.8, 1.8, -3.0); scene.add(rim2);
-  const specStone = new THREE.PointLight(0xfffef8, 4.8, 24); specStone.position.set(1.2, 4.2, 5.4); scene.add(specStone);
-  const specMetal = new THREE.PointLight(0xffe0b8, 2.4, 20); specMetal.position.set(-2.8, 2.6, 4.8); scene.add(specMetal);
-  const stoneSpot = new THREE.SpotLight(0xffffff, 2.9, 32, Math.PI / 7.5, 0.28, 1.1);
-  stoneSpot.position.set(2.2, 6.2, 6.2);
-  stoneSpot.target.position.set(0, 0.35, 0);
-  scene.add(stoneSpot);
-  scene.add(stoneSpot.target);
-  scene.add(new THREE.AmbientLight(0x3d3428, 0.14));
-  const LIGHT_BASE = { specStone: 4.8, specMetal: 2.4, stoneSpot: 2.9, key: 2.45 };
+/* The dome the metal actually reflects. Flat constant-coloured panels are why
+   polished gold reads as clay: a mirror pointed at one flat colour returns one
+   flat colour. A continuous vertical gradient gives every surface direction a
+   tonal ramp instead, which is what makes metal look like metal. */
+function domeTexture() {
+  const c = document.createElement('canvas');
+  c.width = 8; c.height = 256;                      // 1-D ramp; PMREM blurs it anyway
+  const ctx = c.getContext('2d');
+  const g = ctx.createLinearGradient(0, 0, 0, 256);
+  /* The dome is ambience, not a light source. A bright uniform ceiling covers
+     most of the upper hemisphere, so any curved surface reflects it as one
+     even wash — the flat look. The bright sources are the panels below, which
+     have edges, and edges are what reflections need to read as metal. */
+  g.addColorStop(0.00, '#cbb9a2');                  // ceiling: present, not blinding
+  g.addColorStop(0.14, '#8a7a68');
+  g.addColorStop(0.30, '#3a3029');                  // horizon falls away fast, and stays
+  g.addColorStop(0.50, '#171310');                  // dark: the gaps between the strips
+  g.addColorStop(0.72, '#100d0b');                  //   are what read as polished metal
+  g.addColorStop(0.90, '#2e2016');                  // warm floor bounce, never black
+  g.addColorStop(1.00, '#4a3220');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 8, 256);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  return t;
+}
 
-  const pivot = new THREE.Group();
-  scene.add(pivot);
-
-  /* ============================================================
-     RING_STATES — מקום יחיד לכוונון מסלול הטבעת הקולנועי
-     position: [x, y, z] | rotation: [rx, ry, rz] | scale | camera | lights
-     ============================================================ */
-  const RING_STATES = {
-    desktop: {
-      xSide: null,
-      hero: { position:[.30,-.34,0], rotation:[.22,.14,.01], scale:1.28, camera:[0,.06,6.2], lights:{specStone:4.8,specMetal:2.4,stoneSpot:2.9,key:2.45} },
-      lift: { position:[.24,-.10,.14], rotation:[.18,.42,.02], scale:1.06, camera:[.08,.04,5.95], lights:{specStone:4.5,specMetal:2.2,stoneSpot:2.7,key:2.3} },
-      collections: { position:[null,.03,0], rotation:[.12,.78,.04], scale:.38, side:-1, camera:[.32,.08,6.35], lights:{specStone:4.1,specMetal:2.3,stoneSpot:2.4,key:2.1} },
-      showcase: { position:[null,.01,.06], rotation:[.10,1.05,.03], scale:.40, side:1, camera:[-.28,.06,6.28], lights:{specStone:4.2,specMetal:2.2,stoneSpot:2.5,key:2.15} },
-      craftsmanship: { position:[null,-.02,.22], rotation:[.08,1.28,.02], scale:.52, side:1, camera:[-.12,.12,5.45], lights:{specStone:5.4,specMetal:2.5,stoneSpot:3.2,key:2.0} },
-      reviews: { position:[null,.06,0], rotation:[.14,1.65,.04], scale:.32, side:-1, camera:[.18,.04,6.5], lights:{specStone:3.6,specMetal:1.9,stoneSpot:2.1,key:1.85} },
-      contact: { position:[null,-.02,.08], rotation:[.16,1.92,.02], scale:.44, side:-1, camera:[.14,.08,6.05], lights:{specStone:4.6,specMetal:2.3,stoneSpot:2.8,key:2.35} },
-      finale: { position:[0,null,0], rotation:[.20,2.15,.01], scale:.36, camera:[0,.04,6.18], lights:{specStone:4.4,specMetal:2.2,stoneSpot:2.6,key:2.4} },
-      seam: { scale:.34 }
-    },
-    tablet: {
-      xSide: .74,
-      hero: { position:[.26,-.38,0], rotation:[.22,.12,.01], scale:.90, camera:[0,.04,6.1], lights:{specStone:4.4,specMetal:2.2,stoneSpot:2.7,key:2.3} },
-      lift: { position:[.22,-.14,.10], rotation:[.18,.38,.02], scale:.78, camera:[.06,.02,5.85], lights:{specStone:4.2,specMetal:2.1,stoneSpot:2.5,key:2.2} },
-      collections: { position:[null,.02,0], rotation:[.12,.72,.04], scale:.30, side:-1, camera:[.26,.06,6.2], lights:{specStone:3.9,specMetal:2.1,stoneSpot:2.3,key:2.0} },
-      showcase: { position:[null,0,.04], rotation:[.10,.98,.03], scale:.32, side:1, camera:[-.22,.04,6.15], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.4,key:2.05} },
-      craftsmanship: { position:[null,-.04,.18], rotation:[.08,1.18,.02], scale:.42, side:1, camera:[-.10,.10,5.55], lights:{specStone:5.0,specMetal:2.3,stoneSpot:3.0,key:1.95} },
-      reviews: { position:[null,.04,0], rotation:[.14,1.55,.04], scale:.26, side:-1, camera:[.14,.02,6.35], lights:{specStone:3.4,specMetal:1.8,stoneSpot:2.0,key:1.8} },
-      contact: { position:[null,-.04,.06], rotation:[.16,1.82,.02], scale:.34, side:-1, camera:[.10,.06,5.95], lights:{specStone:4.2,specMetal:2.1,stoneSpot:2.6,key:2.2} },
-      finale: { position:[0,null,0], rotation:[.20,2.0,.01], scale:.28, camera:[0,.02,6.05], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.4,key:2.25} },
-      seam: { scale:.27 }
-    },
-    mobile: {
-      xSide: .78,
-      hero: { position:[.22,-.42,0], rotation:[.22,.10,.01], scale:.74, camera:[0,.02,6.0], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.5,key:2.15} },
-      lift: { position:[.18,-.18,.08], rotation:[.18,.34,.02], scale:.64, camera:[.04,0,5.75], lights:{specStone:3.8,specMetal:1.9,stoneSpot:2.3,key:2.05} },
-      collections: { position:[null,0,0], rotation:[.12,.68,.04], scale:.26, side:-1, camera:[.20,.04,6.1], lights:{specStone:3.6,specMetal:1.9,stoneSpot:2.2,key:1.9} },
-      showcase: { position:[null,-.02,.02], rotation:[.10,.92,.03], scale:.28, side:1, camera:[-.16,.02,6.05], lights:{specStone:3.7,specMetal:1.9,stoneSpot:2.3,key:1.95} },
-      craftsmanship: { position:[null,-.06,.14], rotation:[.08,1.10,.02], scale:.36, side:1, camera:[-.08,.08,5.6], lights:{specStone:4.6,specMetal:2.1,stoneSpot:2.8,key:1.85} },
-      reviews: { position:[null,.02,0], rotation:[.14,1.48,.04], scale:.24, side:-1, camera:[.10,0,6.25], lights:{specStone:3.2,specMetal:1.7,stoneSpot:1.9,key:1.75} },
-      contact: { position:[null,-.06,.04], rotation:[.16,1.75,.02], scale:.26, side:-1, camera:[.08,.04,5.85], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.4,key:2.1} },
-      finale: { position:[0,null,0], rotation:[.20,1.92,.01], scale:.24, camera:[0,0,5.95], lights:{specStone:3.8,specMetal:1.9,stoneSpot:2.3,key:2.15} },
-      seam: { scale:.24 }
-    }
+function buildEnvironment() {
+  const box = new THREE.Scene();
+  box.background = new THREE.Color(0x050403);
+  const panel = (hex, mul, w, h, x, y, z) => {
+    const m = new THREE.Mesh(
+      new THREE.PlaneGeometry(w, h),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(hex).multiplyScalar(mul), side: THREE.DoubleSide })
+    );
+    m.position.set(x, y, z);
+    m.lookAt(0, 0, 0);
+    box.add(m);
   };
-  const deviceTier = () => (innerWidth < 768 ? 'mobile' : innerWidth < 1024 ? 'tablet' : 'desktop');
-  const isMobile = () => innerWidth < 768;
 
-  function ringRadiusPx(s){
-    const worldH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
-    return s * (innerHeight / worldH);
-  }
-  function sideX(s, dir, xSideFixed){
-    if (xSideFixed != null) return dir * xSideFixed;
-    const pad = Math.min(48, Math.max(20, innerWidth * .04));
-    const contentEdge = Math.min(innerWidth, 1240) / 2 - pad;
-    const R = ringRadiusPx(s);
-    const cx = Math.min(contentEdge + 46 + R, innerWidth / 2 - R * 1.28 - 8);
-    return dir * Math.max(cx, contentEdge * .8) / (innerWidth / 2);
-  }
-  function resolveState(st, cfg){
-    const x = st.position[0] != null ? st.position[0] : sideX(st.scale, st.side || -1, cfg.xSide);
-    return {
-      x, y: st.position[1], z: st.position[2] || 0,
-      rx: st.rotation[0], ry: st.rotation[1], rz: st.rotation[2],
-      s: st.scale,
-      camX: st.camera[0], camY: st.camera[1], camZ: st.camera[2],
-      lights: st.lights
-    };
-  }
-  function waypoints(){
-    const vh = innerHeight;
-    const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
-    const docTop = el => el.getBoundingClientRect().top + scrollY;
-    const clamp01 = v => Math.max(0, Math.min(1, v));
-    const secCenter = el => clamp01((docTop(el) + el.offsetHeight / 2 - vh / 2) / maxScroll);
-    const seamAt = (el, f) => clamp01((docTop(el) - f * vh) / maxScroll);
-    const $ = id => document.getElementById(id);
-    const cat = $('categories'), feat = $('featured'),
-          rev = $('reviews'), contact = $('contact'),
-          footer = document.querySelector('.footer');
-    const footVp = docTop(footer) - maxScroll;
-    const restY = Math.max(-.55, Math.min(.55, 1 - 2 * footVp / vh));
-    const cfg = RING_STATES[deviceTier()];
-    const S = cfg.seam.scale;
-    const r = key => resolveState(cfg[key], cfg);
-    const cross = (el, fromKey, toKey, midRy) => {
-      const a = r(fromKey), b = r(toKey);
-      return [
-        {p:seamAt(el,.82), ...a, y:-.55, s:S},
-        {p:seamAt(el,.52), x:(a.x+b.x)/2, y:0, z:(a.z+b.z)*.5, s:S, ry:midRy,
-         rx:(a.rx+b.rx)*.5, rz:(a.rz+b.rz)*.5,
-         camX:(a.camX+b.camX)*.5, camY:(a.camY+b.camY)*.5, camZ:(a.camZ+b.camZ)*.5, lights:b.lights},
-        {p:seamAt(el,.22), ...b, y:.55, s:S},
-      ];
-    };
-    const hero=r('hero'), lift=r('lift'), col=r('collections'),
-          show=r('showcase'), craft=r('craftsmanship'),
-          revs=r('reviews'), cont=r('contact');
-    const fin=resolveState(cfg.finale,cfg); fin.y=restY;
-    const pts=[
-      {p:0,...hero},
-      {p:seamAt(cat,.95),...lift},
-      {p:secCenter(cat),...col},
-      ...cross(feat,'collections','showcase',(col.ry+show.ry)*.5+.22),
-      {p:secCenter(feat)*.55+secCenter(rev)*.45,...craft},
-      {p:secCenter(rev),...revs},
-      {p:secCenter(contact),...cont},
-      {p:1,...fin},
-    ];
-    for(let i=1;i<pts.length;i++) pts[i].p=Math.max(pts[i].p,pts[i-1].p+.003);
-    return pts;
-  }
-  let WPTS = waypoints();
+  const dome = new THREE.Mesh(
+    new THREE.SphereGeometry(30, 24, 16),
+    new THREE.MeshBasicMaterial({
+      map: domeTexture(),
+      color: new THREE.Color(0xffffff).multiplyScalar(0.22),
+      side: THREE.BackSide,
+      toneMapped: false,
+    })
+  );
+  box.add(dome);
 
-  const smooth = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
-  function lerpObj(a, b, t){
-    const out = {};
-    for (const k of ['x','y','z','rx','ry','rz','s','camX','camY','camZ']){
-      const va = a[k] ?? 0, vb = b[k] ?? va;
-      out[k] = va + (vb - va) * t;
-    }
-    if (a.lights && b.lights){
-      out.lights = {};
-      for (const k of Object.keys(a.lights))
-        out.lights[k] = a.lights[k] + (b.lights[k] - a.lights[k]) * t;
-    } else out.lights = b.lights || a.lights;
-    return out;
+  /* shaped sources on top of the ramp */
+  /* The key *lamp* below already does the modelling. This panel only needs to
+     put a reflection in the metal, so it stays dim — a big bright plane here
+     repaints the entire band one colour. */
+  panel(0xfff3e0, 2.4, 9, 6,  2.6,  6.2,  3.6);   // key softbox, upper right
+  panel(0xc8d8ff, 0.9,  5, 9, -4.4,  0.6,  5.0);  // cool edge, left front
+  /* Two separated frontal cards rather than one big one. The flat front face
+     of the band mirrors whatever sits behind the camera, so a single even
+     card paints it a single even colour — the exact plastic look we are
+     avoiding. A gap down the middle gives it bright / dark / bright. */
+  panel(0xffeeda, 0.80, 4.5, 9, -3.4,  0.4,  7.4);
+  panel(0xffe6cc, 0.45, 3.5, 8,  3.8,  0.2,  7.6);
+  /* Tall narrow strips flanking the front. On a polished shank these are what
+     draw the long bright highlight that runs the length of the band — the
+     single most recognisable signature of a real jewellery shoot. Broad
+     panels alone only ever produce a flat wash. */
+  panel(0xfff6e8, 30.0, 0.85, 7.0, -3.6,  0.8,  4.6);
+  panel(0xffffff, 20.0, 0.65, 6.0,  3.9,  0.6,  4.2);
+  panel(0xffe8c8, 14.0, 0.60, 6.5, -5.2,  1.4, -1.0);   // left flank
+  panel(0xfff0d8, 12.0, 0.55, 6.0,  5.2,  1.2, -1.6);   // right rear, rim separation
+  /* Small hard cards -> crisp, mobile-stable stone flashes. The brilliants are
+     dielectric and get almost all their life from the environment, so they need
+     these to stay bright even though the overall environment is held down to
+     keep the gold from washing out. Small area, high radiance: sparkle without
+     a wash. */
+  panel(0xffffff, 110.0, 0.85, 0.85,  1.8,  4.0,  4.6);
+  panel(0xfff8ee,  72.0, 1.20, 1.20, -2.2,  4.4,  3.6);
+  panel(0xffffff,  52.0, 0.60, 0.60,  3.2,  2.2,  4.2);
+  panel(0xfff4e6,  40.0, 0.70, 0.70, -1.2,  3.0,  5.0);
+
+  const pm = new THREE.PMREMGenerator(renderer);
+  const rt = pm.fromScene(box, 0.015);
+  pm.dispose();
+  box.traverse((o) => {
+    if (!o.isMesh) return;
+    o.geometry.dispose();
+    o.material.map?.dispose();
+    o.material.dispose();
+  });
+  return rt;
+}
+function installEnvironment() {
+  envRT?.dispose();
+  envRT = buildEnvironment();
+  scene.environment = envRT.texture;
+  scene.environmentIntensity = CONFIG.lighting.envIntensity;
+}
+installEnvironment();
+
+/* ---- soft contact shadow (a sprite, not a shadow map) ---- */
+function shadowTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, 'rgba(0,0,0,.62)');
+  g.addColorStop(.45, 'rgba(0,0,0,.24)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const shadowTex = shadowTexture();
+const shadowMat = new THREE.SpriteMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 0 });
+const shadowSprite = new THREE.Sprite(shadowMat);
+shadowSprite.renderOrder = -1;
+scene.add(shadowSprite);
+
+/* ---- animation hierarchy ---- */
+const pivot = new THREE.Group();
+const orient = new THREE.Group();
+orient.rotation.x = CONFIG.orientX;
+pivot.add(orient);
+pivot.visible = false;
+scene.add(pivot);
+
+/* ============================================================
+   5. MODEL
+   ============================================================ */
+let ringMaterials = [];
+/* proportions of the upright ring, normalised so height === 1 */
+const RING_BOX = { w: 0.9, h: 1, d: 0.25 };
+
+function tuneMaterial(mat, maxAniso) {
+  const M = CONFIG.material;
+  mat.side = THREE.FrontSide;                       // the mesh is closed; backfaces are waste
+  mat.metalness = (mat.metalness ?? 1) * M.metalnessFactor;
+  mat.normalScale?.multiplyScalar(M.normalScale);
+  mat.dithering = true;                             // no banding in the dark falloff
+  mat.envMapIntensity = 1;                          // scene.environmentIntensity drives this
+  for (const key of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap']) {
+    const t = mat[key];
+    if (!t) continue;
+    t.anisotropy = Math.min(M.anisotropy, maxAniso);
+    t.generateMipmaps = true;
+    t.minFilter = THREE.LinearMipmapLinearFilter;
+    t.magFilter = THREE.LinearFilter;
+    t.needsUpdate = true;
   }
-  function samplePath(p){
-    const w = WPTS;
-    if (p <= w[0].p) return w[0];
-    for (let i = 0; i < w.length-1; i++){
-      const a = w[i], b = w[i+1];
-      if (p >= a.p && p <= b.p)
-        return lerpObj(a, b, smooth((p - a.p) / (b.p - a.p)));
-    }
-    return w[w.length-1];
-  }
+  /* Both edits ride on the metalness mask the asset already provides, so gold
+     and stones can be treated as the different materials they are while
+     sharing one draw call. */
+  const gloss = [M.stoneDiffuse, M.goldRoughness, M.stoneRoughness].map((v) => v.toFixed(3));
+  mat.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <metalnessmap_fragment>',
+      `#include <metalnessmap_fragment>
+       float shayGold = smoothstep( 0.12, 0.55, metalnessFactor );
+       roughnessFactor *= mix( ${gloss[2]}, ${gloss[1]}, shayGold );
+       diffuseColor.rgb *= mix( ${gloss[0]}, 1.0, shayGold );`
+    );
+  };
+  mat.customProgramCacheKey = () => 'shay-pbr-' + gloss.join('-');
 
-  // המרת קואורדינטות מסך → world במישור z=0
-  function viewSize(){
-    const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
-    return {h, w: h * camera.aspect};
-  }
+  mat.needsUpdate = true;
+  return mat;
+}
 
-  let progress = 0, target = 0;
-  const mouse = {x:0, y:0, tx:0, ty:0};
-  addEventListener('mousemove', e => {
-    mouse.tx = (e.clientX / innerWidth  - .5) * 2;
-    mouse.ty = (e.clientY / innerHeight - .5) * 2;
-  }, {passive:true});
+async function loadRing() {
+  const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  /* 2048² maps only where they can actually be resolved and afforded:
+     desktop/tablet on a decent tier, or a phone with plenty of memory. */
+  const roomy = (navigator.deviceMemory || 4) >= 8;
+  const useHi = tier !== 'low' && (!mobileLike() || roomy);
+  const url = useHi ? CONFIG.models.hi : CONFIG.models.lo;
+  html.dataset.ringModel = useHi ? 'hi' : 'lo';
 
-  let ring = null, clockT = 0, running = false, booted = false;
-  let ringMats = [];
-  const intro = {v: 1};
-  const clock = new THREE.Clock();
+  const gltf = await loader.loadAsync(url);
+  const model = gltf.scene;
 
-  /* --- צל מגע רך מתחת לטבעת — כדי שתיראה "עומדת" על העמוד ולא מרחפת --- */
-  function makeShadowTexture(){
-    const c = document.createElement('canvas'); c.width = c.height = 256;
-    const ctx = c.getContext('2d');
-    const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    g.addColorStop(0,   'rgba(0,0,0,.5)');
-    g.addColorStop(.55, 'rgba(0,0,0,.22)');
-    g.addColorStop(1,   'rgba(0,0,0,0)');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, 256, 256);
-    const tex = new THREE.CanvasTexture(c);
-    tex.needsUpdate = true;
-    return tex;
-  }
-  const shadowTex = makeShadowTexture();
-  const shadowMat = new THREE.SpriteMaterial({map: shadowTex, transparent:true, depthWrite:false, opacity:0});
-  const shadowSprite = new THREE.Sprite(shadowMat);
-  shadowSprite.renderOrder = -1;
-  scene.add(shadowSprite);
-
-  // ברק היהלום מתעורר רק כשיש תנועה (גלילה/עכבר) — אף פעם לא זוהר קבוע ומוגזם
-  let prevProgress = 0, sparkle = 0;
-
-  // השהיית רינדור כשהטאב מוסתר — חוסך משאבים
-  document.addEventListener('visibilitychange', () => {
-    if (!booted) return;
-    if (document.hidden){ running = false; }
-    else if (!running){ running = true; clock.getDelta(); frame(); }
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    o.frustumCulled = false;                        // one object, always on screen when visible
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    mats.forEach((m) => ringMaterials.push(tuneMaterial(m, maxAniso)));
   });
 
-  function frame(){
-    if (!running) return;
-    requestAnimationFrame(frame);
-    const dt = Math.min(clock.getDelta(), .05);
-    clockT += dt;
+  /* normalise inside the fixed-orientation group so the numbers below are
+     expressed in final, upright screen space */
+  const holder = new THREE.Group();
+  holder.add(model);
+  orient.add(holder);
+  orient.updateWorldMatrix(true, true);
 
-    progress += (target - progress) * (reduceMotion ? 1 : Math.min(1, dt * 2.2));
-    mouse.x += (mouse.tx - mouse.x) * dt * 1.4;
-    mouse.y += (mouse.ty - mouse.y) * dt * 1.4;
+  const box = new THREE.Box3().setFromObject(holder);
+  const size = box.getSize(new THREE.Vector3());
+  const centre = box.getCenter(new THREE.Vector3());
+  const unit = 1 / (size.y || 1);                   // upright height === 1 world unit
+  holder.scale.setScalar(unit);
+  holder.position.copy(centre).multiplyScalar(-unit);
 
-    const s = samplePath(progress);
-    const v = viewSize();
-    const floatAmt = isMobile() ? .018 : .032;
-    const floatY = reduceMotion ? 0 : Math.sin(clockT * .38) * floatAmt;
-    const floatX = reduceMotion ? 0 : Math.cos(clockT * .28) * floatAmt * .7;
-    const mouseAmt = isMobile() ? .06 : .10;
+  RING_BOX.w = size.x * unit;
+  RING_BOX.h = 1;
+  RING_BOX.d = size.z * unit;
+  return holder;
+}
 
-    pivot.position.x = s.x * v.w * .5 + floatX + mouse.x * mouseAmt;
-    pivot.position.y = s.y * v.h * .5 + floatY - mouse.y * mouseAmt * .7;
-    pivot.position.z = s.z || 0;
-    pivot.scale.setScalar(s.s * intro.v);
+/* ============================================================
+   6. ZONES — measured, collision-safe RING AREA rectangles
+   ============================================================
+   CONTENT SAFE AREA = wrap / cards / forms the ring must not cover.
+   RING AREA         = the reserved corridor (margin-inline-end gutter)
+                       plus a forced edge strip on very narrow viewports.
+   ============================================================ */
+const MIN_ZONE = { w: 44, h: 140 };
 
-    camera.position.set(s.camX || 0, s.camY || 0, s.camZ || 6.2);
-    camera.lookAt(0, 0, 0);
+let docRects = {};                                  // zone -> {top,left,w,h} in document space
+let pageMax = 1;
+
+function rectOf(el) {
+  const r = el.getBoundingClientRect();
+  return { top: r.top + scrollY, left: r.left + scrollX, w: r.width, h: r.height };
+}
+
+/* Empty band beside a section's .wrap — prefers the wider side, falls back
+   to a forced viewport-edge strip so mobile always has a RING AREA. */
+function gutterOf(sectionSel) {
+  const sec = document.querySelector(sectionSel);
+  const wrap = sec?.querySelector('.wrap');
+  if (!sec || !wrap) return null;
+  const cs = getComputedStyle(wrap);
+  const padL = parseFloat(cs.paddingLeft) || 0;
+  const padR = parseFloat(cs.paddingRight) || 0;
+  const s = rectOf(sec), w = rectOf(wrap);
+  const left = Math.max(0, (w.left + padL) - s.left);
+  const right = Math.max(0, (s.left + s.w) - (w.left + w.w - padR));
+  let bandW = Math.max(left, right);
+  let useRight = right >= left;
+
+  /* Collision-safe floor: keep a usable edge strip on 320–430px widths. */
+  const floorW = Math.max(48, Math.min(innerWidth * 0.16, 86));
+  if (bandW < floorW) {
+    bandW = floorW;
+    /* In RTL the content margin is on inline-end (physical left). Prefer that. */
+    useRight = false;
+  }
+
+  return {
+    top: s.top + s.h * 0.12,
+    left: useRight ? (s.left + s.w - bandW) : s.left,
+    w: bandW,
+    h: s.h * 0.76,
+  };
+}
+
+function measureZones() {
+  pageMax = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  docRects = {};
+  if (heroStage) docRects.hero = rectOf(heroStage);
+  for (const [name, sel] of [
+    ['categories', '#categories'],
+    ['featured', '#featured'],
+    ['reviews', '#reviews'],
+    ['contact', '#contact'],
+  ]) {
+    const g = gutterOf(sel);
+    if (g && g.w >= MIN_ZONE.w && g.h >= MIN_ZONE.h) docRects[name] = g;
+  }
+}
+
+/* Viewport-space rect for a zone.
+   `atY` pins the rect to a fixed scroll offset instead of the live one. The
+   hero stops use this: their anchor is frozen at the top of the page, so the
+   ring drifts out on its own gentle path (ax/ay) instead of being dragged off
+   screen 1:1 by the scroll. The in-page stops stay unpinned and travel with
+   their section, which is what keeps them beside the copy. */
+function viewRect(name, atY) {
+  const r = docRects[name];
+  if (!r) return null;
+  return { x: r.left - scrollX, y: r.top - (atY == null ? scrollY : atY), w: r.w, h: r.h };
+}
+
+/* scroll progress (0..1) at which an element's centre meets the viewport centre */
+function progressAtCentre(el, bias = 0) {
+  const r = rectOf(el);
+  return clamp01((r.top + r.h * (0.5 + bias) - innerHeight * 0.5) / pageMax);
+}
+const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+/* ============================================================
+   7. TIMELINE
+   ============================================================ */
+const AXIS_X = new THREE.Vector3(1, 0, 0);
+const AXIS_Y = new THREE.Vector3(0, 1, 0);
+const AXIS_Z = new THREE.Vector3(0, 0, 1);
+const _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion(), _qc = new THREE.Quaternion();
+
+function poseQuaternion(turn, tilt, roll, out) {
+  _qa.setFromAxisAngle(AXIS_Y, turn);
+  _qb.setFromAxisAngle(AXIS_X, tilt);
+  _qc.setFromAxisAngle(AXIS_Z, roll);
+  return out.copy(_qc).multiply(_qb).multiply(_qa);
+}
+
+function presetFor(w) {
+  return CONFIG.presets.find((p) => w <= p.maxW) || CONFIG.presets[CONFIG.presets.length - 1];
+}
+let preset = presetFor(innerWidth);
+
+let keyframes = [];
+
+function buildTimeline() {
+  measureZones();
+  preset = presetFor(innerWidth);
+  camera.fov = preset.fov;
+  camera.position.z = preset.dist;
+  camera.updateProjectionMatrix();
+
+  /* Same visual story on every device; only the authored coordinates differ. */
+  const path = innerWidth < 768 ? MOBILE_RING_PATH : DESKTOP_RING_PATH;
+
+  const categories = document.getElementById('categories');
+  const featured = document.getElementById('featured');
+  const reviews = document.getElementById('reviews');
+  const contact = document.getElementById('contact');
+
+  /* Hero exit is timed in viewport-heights so it always breathes across a
+     full screen of scroll. Mid-page stops lock to section centres so the
+     ring stays choreographed beside live content. */
+  const vh = innerHeight;
+  const at = {
+    hero: 0,
+    heroLift: clamp01((vh * 0.14) / pageMax),
+    heroBridge: clamp01((vh * 0.34) / pageMax),
+    catIn: categories ? progressAtCentre(categories, -0.42) : 0.22,
+    categories: categories ? progressAtCentre(categories, -0.04) : 0.28,
+    catOut: categories ? progressAtCentre(categories, 0.40) : 0.34,
+    featIn: featured ? progressAtCentre(featured, -0.40) : 0.40,
+    feature: featured ? progressAtCentre(featured, -0.02) : 0.48,
+    featOut: featured ? progressAtCentre(featured, 0.40) : 0.55,
+    revIn: reviews ? progressAtCentre(reviews, -0.40) : 0.60,
+    reviews: reviews ? progressAtCentre(reviews, 0.0) : 0.68,
+    revOut: reviews ? progressAtCentre(reviews, 0.40) : 0.74,
+    detailIn: contact ? progressAtCentre(contact, -0.38) : 0.80,
+    detail: contact ? progressAtCentre(contact, 0.0) : 0.88,
+    finale: contact ? progressAtCentre(contact, 0.48) : 0.96,
+  };
+
+  /* A pinned zone is frozen at the scroll offset where its own sequence
+     begins, so every stop in that zone shares one stable anchor. */
+  const pinAt = {};
+  for (const stop of path) {
+    if (!stop.pin) continue;
+    const y = (at[stop.id] ?? 0) * pageMax;
+    pinAt[stop.zone] = pinAt[stop.zone] == null ? y : Math.min(pinAt[stop.zone], y);
+  }
+
+  const kf = [];
+  for (const stop of path) {
+    if (!docRects[stop.zone]) continue;             // zone too small on this viewport -> skip
+    const p = at[stop.id];
+    if (p == null) continue;
+    kf.push({
+      id: stop.id,
+      p,
+      zone: stop.zone,
+      pin: !!stop.pin,
+      pinY: pinAt[stop.zone] || 0,
+      ax: stop.ax || 0,
+      ay: stop.ay || 0,
+      fill: stop.fill,
+      dolly: stop.dolly,
+      opacity: stop.opacity,
+      env: stop.env,
+      key: stop.key,
+      turn: preset.turn + stop.turn,
+      tilt: preset.tilt + stop.tilt,
+      roll: stop.roll,
+      q: poseQuaternion(preset.turn + stop.turn, preset.tilt + stop.tilt, stop.roll, new THREE.Quaternion()),
+    });
+  }
+  kf.sort((a, b) => a.p - b.p);
+  /* keep keyframes strictly increasing so interpolation can never divide by 0 */
+  for (let i = 1; i < kf.length; i++) kf[i].p = Math.max(kf[i].p, kf[i - 1].p + 0.004);
+  /* make sure the ring is gone by the time the footer arrives */
+  if (kf.length) {
+    const last = kf[kf.length - 1];
+    if (last.opacity > 0 || last.p < 0.999) {
+      kf.push({ ...last, id: 'gone', p: Math.min(1, Math.max(last.p + 0.02, 0.985)), opacity: 0 });
+    }
+  }
+  keyframes = kf;
+  /* the idle drift lives only inside the first (hero) segment */
+  idleUntil = kf.length > 1 ? kf[1].p : 0.12;
+}
+
+const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+const sample = {
+  x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1,
+  q: new THREE.Quaternion(),
+};
+
+/* resolve one keyframe into concrete screen-space numbers */
+function resolveKeyframe(k, out) {
+  const r = viewRect(k.zone, k.pin ? k.pinY : null);
+  if (!r) return false;
+  const pad = preset.pad;
+  const availH = Math.max(24, r.h - pad * 2);
+  const availW = Math.max(24, r.w - pad * 2);
+  /* projected width changes as the ring turns — account for it explicitly */
+  const turnW = RING_BOX.w * Math.abs(Math.cos(k.turn)) + RING_BOX.d * Math.abs(Math.sin(k.turn));
+  let hpx = k.fill * availH * preset.fill;
+  hpx = Math.min(hpx, cssH * preset.maxVh);          // never dominate the viewport
+  if (hpx * turnW > availW) hpx = availW / turnW;
+  hpx /= 1.04;                                       // headroom for tilt + idle drift
+  out.hpx = hpx;
+  let x = r.x + r.w * 0.5 + (k.ax * availW * 0.5);
+  let y = r.y + r.h * 0.5 + (k.ay * availH * 0.5);
+  /* Soft collision clamp — keep the ring centre inside RING AREA so it
+     cannot drift onto headings / cards / forms. Hero is authored against
+     a dedicated stage and is left unclamped. */
+  if (k.zone !== 'hero') {
+    const halfH = hpx * 0.42;
+    const halfW = hpx * turnW * 0.42;
+    x = Math.min(r.x + r.w - halfW, Math.max(r.x + halfW, x));
+    y = Math.min(r.y + r.h - halfH, Math.max(r.y + halfH, y));
+  }
+  out.x = x;
+  out.y = y;
+  out.dolly = k.dolly;
+  out.opacity = k.opacity;
+  out.env = k.env;
+  out.key = k.key;
+  return true;
+}
+
+const _kA = { x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1 };
+const _kB = { x: 0, y: 0, hpx: 0, dolly: 1, opacity: 0, env: 1, key: 1 };
+
+function samplePath(p) {
+  const kf = keyframes;
+  if (!kf.length) { sample.opacity = 0; return; }
+  if (p <= kf[0].p) {
+    if (resolveKeyframe(kf[0], sample)) sample.q.copy(kf[0].q);
+    return;
+  }
+  const last = kf[kf.length - 1];
+  if (p >= last.p) {
+    if (resolveKeyframe(last, sample)) sample.q.copy(last.q);
+    return;
+  }
+  for (let i = 0; i < kf.length - 1; i++) {
+    const a = kf[i], b = kf[i + 1];
+    if (p < a.p || p > b.p) continue;
+    const t = easeInOut((p - a.p) / (b.p - a.p));
+    if (!resolveKeyframe(a, _kA) || !resolveKeyframe(b, _kB)) { sample.opacity = 0; return; }
+    sample.x = _kA.x + (_kB.x - _kA.x) * t;
+    sample.y = _kA.y + (_kB.y - _kA.y) * t;
+    sample.hpx = _kA.hpx + (_kB.hpx - _kA.hpx) * t;
+    sample.dolly = _kA.dolly + (_kB.dolly - _kA.dolly) * t;
+    sample.opacity = _kA.opacity + (_kB.opacity - _kA.opacity) * t;
+    sample.env = _kA.env + (_kB.env - _kA.env) * t;
+    sample.key = _kA.key + (_kB.key - _kA.key) * t;
+    sample.q.copy(a.q).slerp(b.q, t);
+    return;
+  }
+}
+
+/* ============================================================
+   8. FRAME LOOP — on demand
+   ============================================================ */
+let progress = 0, targetProgress = 0;
+let running = false, rafId = 0, ready = false;
+let idleClock = 0;
+let reveal = 0;                 // 0 -> 1 crossfade from the poster to WebGL
+let idleUntil = 0.12;           // idle drift only runs while the hero pose is live
+const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+const _q = new THREE.Quaternion(), _qIdle = new THREE.Quaternion();
+
+let lastT = 0;
+function tick() {
+  const now = performance.now();
+  const dt = lastT ? Math.min((now - lastT) / 1000, 0.05) : 0.016;
+  lastT = now;
+  return dt;
+}
+
+let reduceMotion = reduceMotionMQ.matches;
+
+function readScroll() {
+  targetProgress = clamp01(scrollY / pageMax);
+  if (reduceMotion) progress = targetProgress;
+  wake();
+}
+
+function wake() {
+  if (!ready || running || document.hidden) return;
+  running = true;
+  lastT = 0;
+  rafId = requestAnimationFrame(frame);
+}
+
+/* --- adaptive DPR: step down if the device cannot hold the frame budget --- */
+const DPR_STEPS = [2, 1.75, 1.5, 1.25, 1];
+let slowFrames = 0, fastFrames = 0;
+
+function adaptQuality(dt) {
+  if (dt > 0.028) { slowFrames++; fastFrames = 0; } else { fastFrames++; slowFrames = 0; }
+  if (slowFrames < 45) return;
+  slowFrames = 0;
+  const next = DPR_STEPS.find((s) => s < dprCap);
+  if (!next) return;
+  dprCap = next;
+  applySize();
+  html.dataset.ringQuality = 'dpr-' + next;
+}
+
+function frame() {
+  if (!running) return;
+  rafId = requestAnimationFrame(frame);
+  const dt = tick();
+  adaptQuality(dt);
+
+  const before = progress;
+  if (reduceMotion) progress = targetProgress;
+  else progress += (targetProgress - progress) * (1 - Math.exp(-dt * CONFIG.scrollDamping));
+
+  samplePath(progress);
+
+  const visible = sample.opacity > 0.002;
+  pivot.visible = visible;
+  shadowSprite.visible = visible;
+
+  /* idle drift — tiny, and only while the hero pose is live; every other
+     stop stays deliberately still so the ring reads as "settled" */
+  const idleOn = visible && !reduceMotion && progress < idleUntil;
+
+  if (visible) {
+    camera.position.z = preset.dist * sample.dolly;
     camera.updateProjectionMatrix();
 
-    if (s.lights){
-      specStone.intensity = s.lights.specStone;
-      specMetal.intensity = s.lights.specMetal;
-      stoneSpot.intensity = s.lights.stoneSpot;
-      key.intensity = s.lights.key;
-    }
-    const heroS = RING_STATES[deviceTier()].hero.scale;
-    const scaleBoost = THREE.MathUtils.clamp(heroS / Math.max(s.s, 0.2), 1, 1.75);
-    if (ringMats.length){
-      const envBoost = JEWELRY_QUALITY.envMapIntensity * Math.min(1.22, 0.88 + scaleBoost * 0.12);
-      ringMats.forEach(m => { m.envMapIntensity = envBoost; });
+    const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5)) * camera.position.z;
+    const ppu = cssH / viewH;                       // css px per world unit at z = 0
+
+    const scale = sample.hpx / ppu;
+    const wx = (sample.x - cssW * 0.5) / ppu;
+    const wy = (cssH * 0.5 - sample.y) / ppu;
+
+    let bobX = 0, bobY = 0;
+    if (idleOn) {
+      idleClock += dt;
+      const amp = preset.idle * scale * 0.016;
+      bobY = Math.sin(idleClock * 0.42) * amp;
+      bobX = Math.cos(idleClock * 0.31) * amp * 0.6;
     }
 
-    if (ring && !reduceMotion){
-      const MAX_TILT = isMobile() ? .02 : .028;
-      ring.rotation.y = (s.ry || 0) + Math.sin(clockT * .18) * .04;
-      ring.rotation.x = (s.rx || JEWELRY_QUALITY.ringTiltX) + Math.sin(clockT * .15) * .025;
-      ring.rotation.z = (s.rz || 0) + Math.sin(clockT * .12) * .015;
-      pivot.rotation.y = mouse.x * MAX_TILT;
-      pivot.rotation.x = -mouse.y * MAX_TILT * .8;
-      pivot.rotation.z = 0;
-    }
+    pointer.x += (pointer.tx - pointer.x) * (1 - Math.exp(-dt * 3));
+    pointer.y += (pointer.ty - pointer.y) * (1 - Math.exp(-dt * 3));
 
-    if (ringMats.length){
-      const moveSpeed = Math.abs(progress - prevProgress) / Math.max(dt, .0001);
-      const mouseSpeed = Math.hypot(mouse.tx - mouse.x, mouse.ty - mouse.y);
-      prevProgress = progress;
-      const targetSparkle = reduceMotion ? 0 : Math.min(1, moveSpeed * 10 + mouseSpeed * 1.2);
-      sparkle += (targetSparkle - sparkle) * Math.min(1, dt * 3.5);
-      const ei = JEWELRY_QUALITY.emissiveBase + sparkle * (JEWELRY_QUALITY.emissiveSparkleMax - JEWELRY_QUALITY.emissiveBase);
-      ringMats.forEach(m => { if (m.emissiveMap) m.emissiveIntensity = ei; });
-    }
+    pivot.position.set(wx + bobX, wy + bobY, 0);
+    pivot.scale.setScalar(scale);
 
-    const ringDiam = 2 * s.s * intro.v;
-    shadowSprite.position.set(pivot.position.x, pivot.position.y - ringDiam * .48, -.35);
-    shadowSprite.scale.set(ringDiam * 1.5, ringDiam * .46, 1);
-    shadowMat.opacity = (reduceMotion ? .16 : .2) * intro.v * Math.min(1, s.s / heroS + .4);
+    _q.copy(sample.q);
+    if (!reduceMotion) {
+      if (idleOn) {
+        _qIdle.setFromAxisAngle(AXIS_Y, Math.sin(idleClock * 0.27) * 0.035 * preset.idle);
+        _q.multiply(_qIdle);
+        _qIdle.setFromAxisAngle(AXIS_X, Math.sin(idleClock * 0.21) * 0.016 * preset.idle);
+        _q.multiply(_qIdle);
+      }
+      if (canHover) {
+        _qIdle.setFromAxisAngle(AXIS_Y, pointer.x * 0.06);
+        _q.premultiply(_qIdle);
+        _qIdle.setFromAxisAngle(AXIS_X, -pointer.y * 0.04);
+        _q.premultiply(_qIdle);
+      }
+    }
+    pivot.quaternion.copy(_q);
+
+    const S = CONFIG.shadow;
+    shadowSprite.position.set(pivot.position.x, pivot.position.y - scale * S.drop, -0.4);
+    shadowSprite.scale.set(scale * S.spread, scale * S.height, 1);
+    shadowMat.opacity = S.opacity * sample.opacity;
+
+    scene.environmentIntensity = CONFIG.lighting.envIntensity * sample.env;
+    keyLight.intensity = BASE_INTENSITY.key * sample.key;
+    rimLight.intensity = BASE_INTENSITY.rim * (0.85 + sample.key * 0.15);
+    sparkLight.intensity = BASE_INTENSITY.spark * sample.key;
 
     renderer.render(scene, camera);
   }
 
-  function resize(){
-    camera.aspect = innerWidth / innerHeight;
-    camera.updateProjectionMatrix();
-    setRendererQuality();
-    renderer.setSize(innerWidth, innerHeight);
-    WPTS = waypoints();
-    ScrollTrigger.refresh();
-  }
-  addEventListener('resize', resize, {passive:true});
+  if (ready && reveal < 1) reveal = Math.min(1, reveal + dt / 0.85);
+  canvas.style.opacity = ready ? (sample.opacity * reveal).toFixed(4) : '0';
 
-  let scrollTriggerInst = null;
-  function bindScroll(){
-    if (scrollTriggerInst) scrollTriggerInst.kill();
-    scrollTriggerInst = ScrollTrigger.create({
-      start: 0,
-      end: () => document.documentElement.scrollHeight - innerHeight,
-      scrub: reduceMotion ? false : JEWELRY_QUALITY.scrollScrub,
-      onUpdate: self => { target = self.progress; },
-      onRefresh: self => { WPTS = waypoints(); target = self.progress; }
-    });
-  }
-  bindScroll();
-
-  /* --- lazy-load של המודל אחרי שהעמוד עלה --- */
-  async function tryLoad(){
-    let lastErr;
-    for (const url of MODEL_URLS){
-      try { return await loadGLB(url, THREE, envMap, renderer); }
-      catch(e){ lastErr = e; }
-    }
-    throw lastErr;
-  }
-  function boot(){
-    tryLoad().then(mesh => {
-      ring = mesh;
-      ring.rotation.x = JEWELRY_QUALITY.ringTiltX;
-      ringMats = ring.userData.jewelryMats || [];
-      pivot.add(ring);
-      booted = true;
-      running = true;
-      clock.start();
-      frame();
-      canvas.classList.add('on');
-    }).catch(err => {
-      console.warn('Ring model failed to load — site continues without 3D:', err);
-      dispose();
-      canvas.remove();
-    });
-  }
-  if (document.readyState === 'complete') setTimeout(boot, 300);
-  else addEventListener('load', () => setTimeout(boot, 300));
-
-  /* --- ניקוי משאבים --- */
-  function dispose(){
+  /* park the loop once the timeline has settled and nothing else moves */
+  const moving = Math.abs(targetProgress - progress) > CONFIG.settleEpsilon
+    || Math.abs(progress - before) > CONFIG.settleEpsilon
+    || Math.hypot(pointer.tx - pointer.x, pointer.ty - pointer.y) > 0.002
+    || (ready && reveal < 1);
+  if (!moving && !idleOn) {
     running = false;
-    if (scrollTriggerInst) scrollTriggerInst.kill();
-    scene.traverse(o => {
-      if (o.isMesh){
-        if (o.geometry) o.geometry.dispose();
-        const mats = Array.isArray(o.material) ? o.material : [o.material];
-        mats.forEach(m => {
-          if (!m) return;
-          Object.values(m).forEach(v => { if (v && v.isTexture) v.dispose(); });
-          m.dispose();
-        });
-      }
-    });
-    if (scene.environment) scene.environment.dispose();
-    shadowTex.dispose();
-    shadowMat.dispose();
-    renderer.dispose();
+    cancelAnimationFrame(rafId);
   }
-  addEventListener('pagehide', dispose, {once:true});
-})();
+}
+
+/* ============================================================
+   9. EVENTS
+   ============================================================ */
+addEventListener('scroll', readScroll, { passive: true });
+
+/* the canvas' own box is the single source of truth for the drawing buffer,
+   so the internal resolution always matches what is displayed */
+const ro = new ResizeObserver(() => { applySize(); buildTimeline(); readScroll(); });
+ro.observe(canvas);
+/* content reflow (fonts, images, zoom) moves the zones too */
+const roBody = new ResizeObserver(() => { buildTimeline(); readScroll(); });
+roBody.observe(document.body);
+
+let resizeTimer = 0;
+function onViewportChange() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    dprCap = Math.min(dprCap, dprCeiling(tier, mobileLike()));
+    applySize();
+    buildTimeline();
+    readScroll();
+  }, 120);
+}
+addEventListener('resize', onViewportChange, { passive: true });
+addEventListener('orientationchange', onViewportChange, { passive: true });
+visualViewport?.addEventListener('resize', onViewportChange, { passive: true });
+
+if (canHover) {
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    pointer.tx = (e.clientX / innerWidth - 0.5) * 2;
+    pointer.ty = (e.clientY / innerHeight - 0.5) * 2;
+    wake();
+  }, { passive: true });
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { running = false; cancelAnimationFrame(rafId); }
+  else wake();
+});
+addEventListener('pageshow', () => { applySize(); buildTimeline(); readScroll(); });
+addEventListener('pagehide', () => { running = false; cancelAnimationFrame(rafId); });
+
+reduceMotionMQ.addEventListener('change', (m) => {
+  reduceMotion = m.matches;
+  progress = targetProgress;
+  wake();
+});
+
+/* ---- fonts / late layout shifts move the zones: re-measure ---- */
+document.fonts?.ready.then(() => { buildTimeline(); readScroll(); });
+addEventListener('load', () => { buildTimeline(); readScroll(); });
+
+/* ---- WebGL context loss ---- */
+canvas.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  running = false;
+  cancelAnimationFrame(rafId);
+  ready = false;
+  html.dataset.ringState = 'context-lost';
+  heroStage?.classList.remove('ring-live');
+  canvas.classList.remove('on');
+}, false);
+
+canvas.addEventListener('webglcontextrestored', () => {
+  renderer.resetState();
+  installEnvironment();
+  ringMaterials.forEach((m) => { m.needsUpdate = true; });
+  applySize();
+  buildTimeline();
+  ready = true;
+  html.dataset.ringState = 'ready';
+  canvas.classList.add('on');
+  heroStage?.classList.add('ring-live');
+  readScroll();
+}, false);
+
+/* Frame-by-frame inspection hook. Opt-in via ?ringdebug so nothing is
+   exposed on the live site. Used by the test harness to verify the path
+   against the measured DOM instead of eyeballing screenshots. */
+if (location.search.includes('ringdebug')) {
+  /* settle the damped follow instantly so an audit reads the exact pose for a
+     scroll offset instead of whatever the easing happens to be passing through */
+  window.__ringSnap = () => { progress = targetProgress; samplePath(progress); };
+  /* Render and read back in one turn — the drawing buffer is still intact at
+     this point, so no preserveDrawingBuffer (and its memory cost) is needed in
+     production. Used to regenerate the hero poster from the real scene. */
+  /* Freeze the scene on the hero pose, fully revealed and without the contact
+     shadow, so the poster's transparent box is the ring silhouette itself.
+     Used to regenerate the poster from the real scene whenever the materials
+     or lighting change. */
+  window.__ringPoster = () => {
+    running = false;
+    cancelAnimationFrame(rafId);
+    reveal = 1;
+    progress = targetProgress = 0;
+    samplePath(0);
+    shadowSprite.visible = false;
+    canvas.style.opacity = '1';
+    /* The renderer has no preserveDrawingBuffer, so the buffer is discarded
+       after each composite. Keep drawing the frozen pose every frame or the
+       screenshot catches an empty canvas. */
+    (function hold() { requestAnimationFrame(hold); renderer.render(scene, camera); })();
+  };
+  window.__ring = () => ({
+    preset, progress, targetProgress, pageMax, docRects,
+    zones: Object.fromEntries(Object.keys(docRects).map((n) => [n, viewRect(n)])),
+    keyframes: keyframes.map((k) => ({ id: k.id, p: +k.p.toFixed(4), zone: k.zone, pin: k.pin, fill: k.fill, opacity: k.opacity })),
+    sample: { x: Math.round(sample.x), y: Math.round(sample.y), hpx: Math.round(sample.hpx), opacity: +sample.opacity.toFixed(3) },
+    ringBox: RING_BOX,
+  });
+}
+
+/* ============================================================
+   10. BOOT
+   ============================================================ */
+html.dataset.ringState = 'loading';
+applySize();
+buildTimeline();
+
+loadRing()
+  .then((holder) => {
+    pivot.visible = true;
+    ready = true;
+    applySize();
+    buildTimeline();
+    readScroll();
+    samplePath(progress);
+    /* render one complete frame *before* revealing, so the crossfade from
+       the poster never shows an empty or half-lit canvas */
+    running = true;
+    lastT = 0;
+    frame();
+    requestAnimationFrame(() => {
+      html.dataset.ringState = 'ready';
+      canvas.classList.add('on');
+      heroStage?.classList.add('ring-live');
+    });
+  })
+  .catch((err) => {
+    console.warn('[ring] model unavailable — static poster retained:', err);
+    bail('model-load-failed');
+  });
 </script>
 </body>
 </html>

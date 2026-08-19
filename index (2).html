@@ -97,6 +97,8 @@ a{color:inherit;text-decoration:none}
     radial-gradient(1000px 680px at 8% 82%, rgba(201,163,106,.06), transparent 62%),
     linear-gradient(185deg,#141414 0%, #0f0f0f 52%, #0a0a0a 100%);
 }
+/* Desktop: wrapper is transparent so the existing hero grid is unchanged */
+.hero-mobile-canvas{display:contents}
 .hero::before{
   content:'';position:absolute;inset:0;opacity:.18;pointer-events:none;
   background:
@@ -381,11 +383,122 @@ textarea.field{min-height:132px;resize:vertical}
   .cat-grid,.feat-grid{grid-template-columns:1fr 1fr;gap:14px}
   .cat-body{padding:18px 14px 22px}
   .cat-body h3{font-size:16px}
-  .hero-cta .btn{padding:13px 28px;font-size:14px}
-  .hero-copy{padding-top:148px;padding-inline:20px}
-  .hero-sub{font-size:17px;margin-bottom:36px}
   .sec-pad{padding:clamp(64px,14vw,88px) 0}
   .contact-form .row{grid-template-columns:1fr}
+}
+
+/* Mobile hero: landscape 16:9 canvas — scaled desktop composition, not a rebuilt layout */
+@media (max-width:767.98px){
+  .hero{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:0;
+    height:auto;
+    overflow:hidden;
+    grid-template-columns:none;
+    /* Black bars above/below; centers the banner without stretching it */
+    padding-block:max(24px, calc((100svh - 56.25vw) / 2));
+    background:#0f0f0f;
+  }
+  .hero::before,
+  .hero::after{display:none}
+
+  .hero-mobile-canvas{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
+    direction:ltr;
+    align-items:center;
+    width:100vw;
+    aspect-ratio:16 / 9;
+    position:relative;
+    overflow:hidden;
+    margin:auto;
+    container-type:size;
+    container-name:hero;
+    isolation:isolate;
+    background:
+      radial-gradient(1400px 820px at 88% 28%, rgba(201,163,106,.12), transparent 58%),
+      radial-gradient(1000px 680px at 8% 82%, rgba(201,163,106,.06), transparent 62%),
+      linear-gradient(185deg,#141414 0%, #0f0f0f 52%, #0a0a0a 100%);
+  }
+  .hero-mobile-canvas::before{
+    content:'';position:absolute;inset:0;opacity:.18;pointer-events:none;z-index:1;
+    background:
+      radial-gradient(2px 360px at 18% 58%, rgba(255,255,255,.06), transparent),
+      radial-gradient(2px 520px at 66% 28%, rgba(226,194,142,.07), transparent),
+      radial-gradient(1.5px 320px at 84% 72%, rgba(255,255,255,.05), transparent);
+    transform:rotate(-18deg) scale(1.4);
+  }
+  .hero-mobile-canvas::after{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+    background:
+      radial-gradient(ellipse 90% 70% at 18% 50%, rgba(15,15,15,.72) 0%, transparent 68%),
+      linear-gradient(90deg,#0f0f0f 0%,rgba(15,15,15,.52) 22%,transparent 48%),
+      linear-gradient(0deg,#0f0f0f 0%,transparent 18%),
+      linear-gradient(180deg,transparent 72%,rgba(10,10,10,.55) 100%);
+  }
+
+  .hero-copy{
+    padding:7cqh 4cqw 14cqh;
+    position:relative;
+    z-index:70; /* above #ring-canvas so the 3D ring cannot cover text/CTAs */
+    direction:rtl;text-align:right;
+  }
+  .hero-logo{margin-bottom:2.2cqh}
+  .hero-logo .l1{
+    font-size:clamp(22px, 6.8cqw, 104px);
+    letter-spacing:.3em;text-indent:.3em;
+  }
+  .hero-logo .l2{
+    gap:1cqw;margin-top:.6cqh;
+    font-size:clamp(8px, 1.45cqw, 20px);
+    letter-spacing:.66em;
+  }
+  .hero-logo .l2::before,
+  .hero-logo .l2::after{flex-basis:clamp(10px, 3.6cqw, 58px)}
+  .hero-sub{
+    font-size:clamp(10px, 2cqw, 24px);
+    line-height:1.45;
+    max-width:28ch;
+    margin-bottom:2.4cqh;
+  }
+  .hero-cta{
+    display:flex;
+    gap:clamp(6px, 1.2cqw, 18px);
+    flex-wrap:nowrap;
+  }
+  .hero-cta .btn{
+    padding:clamp(5px, 1.2cqh, 15px) clamp(8px, 2.4cqw, 40px);
+    font-size:clamp(9px, 1.2cqw, 15px);
+    white-space:nowrap;
+  }
+
+  .hero-visual{
+    position:relative;
+    height:100%;
+    min-height:0;
+    opacity:1;
+    z-index:2;
+  }
+  .hero-visual .img-slot{
+    position:absolute;inset:0;
+    background-color:transparent;
+    background-size:contain;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
+  .hero-visual .img-slot img{
+    width:100%;height:100%;
+    /* Fully visible within the 16:9 canvas column — no viewport cover-crop */
+    object-fit:contain;
+    object-position:center right;
+    filter:contrast(1.1) saturate(1.08) brightness(1.02);
+  }
+  .hero-visual .img-slot::after{
+    width:min(56%,42cqw);
+    height:min(42%,28cqh);
+  }
 }
 </style>
 </head>
@@ -409,19 +522,21 @@ textarea.field{min-height:132px;resize:vertical}
 
 <!-- ==================== HERO ==================== -->
 <section class="hero" id="hero">
-  <div class="hero-copy">
-    <div class="hero-logo reveal">
-      <div class="l1">SHAY</div>
-      <div class="l2">JEWELRY</div>
+  <div class="hero-mobile-canvas">
+    <div class="hero-copy">
+      <div class="hero-logo reveal">
+        <div class="l1">SHAY</div>
+        <div class="l2">JEWELRY</div>
+      </div>
+      <p class="hero-sub reveal">תכשיטים בעבודת יד עם יהלומים טבעיים וזהב איכותי. איכות שנשארת לנצח</p>
+      <div class="hero-cta reveal">
+        <a href="#featured" class="btn btn-gold">לצפייה בקולקציה</a>
+        <a href="#contact" class="btn btn-ghost">קבעי פגישה</a>
+      </div>
     </div>
-    <p class="hero-sub reveal">תכשיטים בעבודת יד עם יהלומים טבעיים וזהב איכותי. איכות שנשארת לנצח</p>
-    <div class="hero-cta reveal">
-      <a href="#featured" class="btn btn-gold">לצפייה בקולקציה</a>
-      <a href="#contact" class="btn btn-ghost">קבעי פגישה</a>
+    <div class="hero-visual">
+      <div class="img-slot"><img src="images/hero.jpg?v=no-static-ring" alt="SHAY JEWELRY — תכשיטי יוקרה" fetchpriority="high" decoding="sync" width="872" height="714"></div>
     </div>
-  </div>
-  <div class="hero-visual">
-    <div class="img-slot"><img src="images/hero.jpg?v=no-static-ring" alt="SHAY JEWELRY — תכשיטי יוקרה" fetchpriority="high" decoding="sync" width="872" height="714"></div>
   </div>
 </section>
 
@@ -898,7 +1013,8 @@ function loadGLB(url, three, envMap, renderer){
     },
     mobile: {
       xSide: .78,
-      hero: { position:[.22,-.42,0], rotation:[.22,.10,.01], scale:.74, camera:[0,.02,6.0], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.5,key:2.15} },
+      /* hero pose is computed from .hero-mobile-canvas — keep desktop composition, scaled */
+      hero: { position:[0,-.22,0], rotation:[.22,.14,.01], scale:.08, camera:[0,.02,6.0], lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.5,key:2.15} },
       lift: { position:[.18,-.18,.08], rotation:[.18,.34,.02], scale:.64, camera:[.04,0,5.75], lights:{specStone:3.8,specMetal:1.9,stoneSpot:2.3,key:2.05} },
       collections: { position:[null,0,0], rotation:[.12,.68,.04], scale:.26, side:-1, camera:[.20,.04,6.1], lights:{specStone:3.6,specMetal:1.9,stoneSpot:2.2,key:1.9} },
       showcase: { position:[null,-.02,.02], rotation:[.10,.92,.03], scale:.28, side:1, camera:[-.16,.02,6.05], lights:{specStone:3.7,specMetal:1.9,stoneSpot:2.3,key:1.95} },
@@ -911,6 +1027,42 @@ function loadGLB(url, three, envMap, renderer){
   };
   const deviceTier = () => (innerWidth < 768 ? 'mobile' : innerWidth < 1024 ? 'tablet' : 'desktop');
   const isMobile = () => innerWidth < 768;
+
+  /* Map the desktop hero ring into the mobile 16:9 canvas (bottom-center, proportionally small) */
+  function mobileHeroFromCanvas(){
+    const el = document.querySelector('.hero-mobile-canvas');
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    if (rect.height < 8 || rect.width < 8) return null;
+    const desk = RING_STATES.desktop.hero;
+    /* Keep ring clearly smaller than the canvas text/CTA column */
+    const scale = desk.scale * (rect.height / innerHeight) * 0.22;
+    const cx = rect.left + rect.width * 0.5;
+    const cy = rect.top + rect.height * 0.94;
+    const x = (cx / innerWidth - 0.5) * 2;
+    const y = (0.5 - cy / innerHeight) * 2;
+    return {
+      position:[x, y, 0],
+      rotation: desk.rotation,
+      scale,
+      camera:[0, .02, 6.0],
+      lights:{specStone:4.0,specMetal:2.0,stoneSpot:2.5,key:2.15}
+    };
+  }
+  function heroStateForTier(cfg){
+    if (deviceTier() === 'mobile'){
+      const live = mobileHeroFromCanvas();
+      if (live) return live;
+    }
+    return cfg.hero;
+  }
+  function heroScaleForTier(){
+    if (isMobile()){
+      const live = mobileHeroFromCanvas();
+      if (live) return live.scale;
+    }
+    return RING_STATES[deviceTier()].hero.scale;
+  }
 
   function ringRadiusPx(s){
     const worldH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
@@ -949,7 +1101,7 @@ function loadGLB(url, three, envMap, renderer){
     const restY = Math.max(-.55, Math.min(.55, 1 - 2 * footVp / vh));
     const cfg = RING_STATES[deviceTier()];
     const S = cfg.seam.scale;
-    const r = key => resolveState(cfg[key], cfg);
+    const r = key => resolveState(key === 'hero' ? heroStateForTier(cfg) : cfg[key], cfg);
     const cross = (el, fromKey, toKey, midRy) => {
       const a = r(fromKey), b = r(toKey);
       return [
@@ -1083,7 +1235,7 @@ function loadGLB(url, three, envMap, renderer){
       stoneSpot.intensity = s.lights.stoneSpot;
       key.intensity = s.lights.key;
     }
-    const heroS = RING_STATES[deviceTier()].hero.scale;
+    const heroS = heroScaleForTier();
     const scaleBoost = THREE.MathUtils.clamp(heroS / Math.max(s.s, 0.2), 1, 1.75);
     if (ringMats.length){
       const envBoost = JEWELRY_QUALITY.envMapIntensity * Math.min(1.22, 0.88 + scaleBoost * 0.12);
